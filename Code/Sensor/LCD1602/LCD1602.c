@@ -76,6 +76,7 @@ static void LCD1602LoadWord(uchar Idx,const uchar *Word)//¼ÓÔØ×ÖÄ£µ½CGRAM
 	uchar i;
 	delay_ms(1);
 	LCD1602SetCGRAM(Idx);
+	delay_ms(1);
 	for(i=0;i!=8;++i)
 		LCD1602WriteCmdOrData(Word[i],1);
 }

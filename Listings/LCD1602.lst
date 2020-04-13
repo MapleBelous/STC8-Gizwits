@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/10/2020 16:40:33 PAGE 1   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/13/2020 12:40:53 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE LCD1602
@@ -62,7 +62,7 @@ line level    source
   51   1          LCD1602_RW = 1;
   52   1          LCD1602_EN = 1;
   53   1              LCD1602_DATA=0xFF;
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/10/2020 16:40:33 PAGE 2   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/13/2020 12:40:53 PAGE 2   
 
   54   1              delay_us(40);//等待中
   55   1              Data=LCD1602_DATA;
@@ -89,33 +89,34 @@ line level    source
   76   1              uchar i;
   77   1              delay_ms(1);
   78   1              LCD1602SetCGRAM(Idx);
-  79   1              for(i=0;i!=8;++i)
-  80   1                      LCD1602WriteCmdOrData(Word[i],1);
-  81   1      }
-  82          static void LCD1602SetCGRAM(uchar idx) //0x00-0x07,修改CGRAM位置(自制字模RAM位置)
-  83          {
-  84   1          idx &= 0x07, idx <<= 3, idx |= 0x40;
-  85   1          LCD1602WriteCmdOrData(idx, 0);
-  86   1      }
-  87          static void LCD1602Wait(void) //等待LCD1602空闲
-  88          {
-  89   1          bool isBusy;
-  90   1          LCD1602_RS = 0;
-  91   1          LCD1602_RW = 1;
-  92   1          do
-  93   1          {
-  94   2              LCD1602_EN = 1;
-  95   2                      LCD1602_Busy=1;
-  96   2                      delay_us(40);//等待中
-  97   2                      isBusy=LCD1602_Busy;
-  98   2                      LCD1602_EN = 0;
-  99   2          } while (isBusy);
- 100   1      }
- 101          //------------------------------------------------------------------------------------------------//
+  79   1              delay_ms(1);
+  80   1              for(i=0;i!=8;++i)
+  81   1                      LCD1602WriteCmdOrData(Word[i],1);
+  82   1      }
+  83          static void LCD1602SetCGRAM(uchar idx) //0x00-0x07,修改CGRAM位置(自制字模RAM位置)
+  84          {
+  85   1          idx &= 0x07, idx <<= 3, idx |= 0x40;
+  86   1          LCD1602WriteCmdOrData(idx, 0);
+  87   1      }
+  88          static void LCD1602Wait(void) //等待LCD1602空闲
+  89          {
+  90   1          bool isBusy;
+  91   1          LCD1602_RS = 0;
+  92   1          LCD1602_RW = 1;
+  93   1          do
+  94   1          {
+  95   2              LCD1602_EN = 1;
+  96   2                      LCD1602_Busy=1;
+  97   2                      delay_us(40);//等待中
+  98   2                      isBusy=LCD1602_Busy;
+  99   2                      LCD1602_EN = 0;
+ 100   2          } while (isBusy);
+ 101   1      }
+ 102          //------------------------------------------------------------------------------------------------//
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    284    ----
+   CODE SIZE        =    287    ----
    CONSTANT SIZE    =     44    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
@@ -125,9 +126,9 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    EDATA SIZE       =   ----    ----
    HDATA SIZE       =   ----    ----
    XDATA CONST SIZE =   ----    ----
-   FAR CONST SIZE   =   ----    ----
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/10/2020 16:40:33 PAGE 3   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/13/2020 12:40:53 PAGE 3   
 
+   FAR CONST SIZE   =   ----    ----
 END OF MODULE INFORMATION.
 
 

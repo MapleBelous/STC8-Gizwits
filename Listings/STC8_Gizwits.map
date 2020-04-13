@@ -1,4 +1,4 @@
-LX51 LINKER/LOCATER V4.66.93.0                                                          04/10/2020  16:40:33  PAGE 1
+LX51 LINKER/LOCATER V4.66.93.0                                                          04/13/2020  12:40:54  PAGE 1
 
 
 LX51 LINKER/LOCATER V4.66.93.0, INVOKED BY:
@@ -67,7 +67,7 @@ INPUT MODULES INCLUDED:
   C:\KEIL_V5\C51\LIB\C51S.LIB (?C?ULSHR)
          COMMENT TYPE 1: A51 / ASM51 Assembler
   C:\KEIL_V5\C51\LIB\C51S.LIB (?C?LSHL)
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 2
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 2
 
 
          COMMENT TYPE 1: A51 / ASM51 Assembler
@@ -135,7 +135,7 @@ START     STOP      LENGTH    ALIGN  RELOC    MEMORY CLASS   SEGMENT NAME
 00139CH   00153FH   0001A4H   BYTE   UNIT     CODE           ?PR?_GIZWITSHANDLEWIFIASK?GIZWITSMSG
 001540H   0016C5H   000186H   BYTE   UNIT     CODE           ?PR?_GIZWITSSEND?GIZWITSHANDLE
 0016C6H   001827H   000162H   BYTE   UNIT     CODE           ?PR?GIZWITSWIFIANS0X21?GIZWITSMSG
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 3
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 3
 
 
 001828H   001983H   00015CH   BYTE   UNIT     CODE           ?PR?DS18B20GETTEMPERATURE?DS18B20
@@ -203,7 +203,7 @@ START     STOP      LENGTH    ALIGN  RELOC    MEMORY CLASS   SEGMENT NAME
    *DEL*:           000009H   BYTE   UNIT     CODE           ?PR?DELAY1MS?DELAY
    *DEL*:           00003CH   BYTE   UNIT     CODE           ?PR?_DS18B20SET?DS18B20
    *DEL*:           000003H   BYTE   UNIT     DATA           ?DT?_DS18B20SET?DS18B20
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 4
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 4
 
 
    *DEL*:           000048H   BYTE   UNIT     CODE           ?PR?LCD1602INIT?LCD1602
@@ -216,7 +216,7 @@ START     STOP      LENGTH    ALIGN  RELOC    MEMORY CLASS   SEGMENT NAME
    *DEL*:           000013H   BYTE   UNIT     CODE           ?PR?_LCD1602WRITECMDORDATA?LCD1602
    *DEL*:           000001H   BYTE   UNIT     DATA           ?DT?_LCD1602WRITECMDORDATA?LCD1602
    *DEL*:           000000H.1 BIT    UNIT     BIT            ?BI?_LCD1602WRITECMDORDATA?LCD1602
-   *DEL*:           000033H   BYTE   UNIT     CODE           ?PR?_LCD1602LOADWORD?LCD1602
+   *DEL*:           000036H   BYTE   UNIT     CODE           ?PR?_LCD1602LOADWORD?LCD1602
    *DEL*:           000005H   BYTE   UNIT     DATA           ?DT?_LCD1602LOADWORD?LCD1602
    *DEL*:           000012H   BYTE   UNIT     CODE           ?PR?_LCD1602SETCGRAM?LCD1602
    *DEL*:           000015H   BYTE   UNIT     CODE           ?PR?LCD1602WAIT?LCD1602
@@ -271,7 +271,7 @@ INIT_TIMER0/INIT                       ----- -----  ----- -----  ----- -----
 
 INIT_UART1/INIT                        ----- -----  0022H 0025H  ----- -----
 
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 5
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 5
 
 
 INIT_UART4/INIT                        ----- -----  0022H 0025H  ----- -----
@@ -339,7 +339,7 @@ DS18B20CONVERTTEMPERATURE/DS18B20      ----- -----  ----- -----  ----- -----
   +--> DS18B20INIT/DS18B20
   +--> _DS18B20WRITEBYTE/DS18B20
 
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 6
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 6
 
 
 DELAY100MS/DELAY                       ----- -----  ----- -----  ----- -----
@@ -407,7 +407,7 @@ _GIZWITSHANDLEWIFIASK/GIZWITSMSG       ----- -----  0029H 002AH  0013H 0014H
 GIZWITSMSG                             ----- -----  ----- -----  ----- -----
 
 GIZWITSSETFIFICONTROL/GIZWITSMSG       ----- -----  ----- -----  0015H 0016H
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 7
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 7
 
 
   +--> PRINTF/PRINTF
@@ -475,7 +475,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0100059DH   CODE     ---       ?C?CSTPTR
       0100009DH   CODE     ---       ?C?FPADD
       01000344H   CODE     ---       ?C?FPCONVERT
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 8
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 8
 
 
       0100044AH   CODE     ---       ?C?FPDIV
@@ -543,7 +543,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
 *SFR* 000000DAH   DATA     BYTE      CCAPM0
 *SFR* 000000DBH   DATA     BYTE      CCAPM1
 *SFR* 000000DCH   DATA     BYTE      CCAPM2
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 9
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 9
 
 
 *SFR* 000000DDH   DATA     BYTE      CCAPM3
@@ -611,7 +611,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0200000CH   PDATA    WORD      GizwitsReceiveIdx
       0200000AH   PDATA    WORD      GizwitsReceiveLen
       02000000H   PDATA    BYTE      GizwitsReceiveSn
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 10
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 10
 
 
       0200000EH   PDATA    BYTE      GizwitsReceiveSum
@@ -679,7 +679,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
 *SFR* 00000080H.6 DATA     BIT       P06
 *SFR* 00000080H.7 DATA     BIT       P07
 *SFR* 00000094H   DATA     BYTE      P0M0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 11
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 11
 
 
 *SFR* 00000093H   DATA     BYTE      P0M1
@@ -747,7 +747,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
 *SFR* 000000E8H.5 DATA     BIT       P65
 *SFR* 000000E8H.6 DATA     BIT       P66
 *SFR* 000000E8H.7 DATA     BIT       P67
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 12
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 12
 
 
 *SFR* 000000CCH   DATA     BYTE      P6M0
@@ -815,7 +815,7 @@ PUBLIC SYMBOLS OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
 *SFR* 000000D4H   DATA     BYTE      T3H
 *SFR* 000000D5H   DATA     BYTE      T3L
 *SFR* 000000D2H   DATA     BYTE      T4H
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 13
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 13
 
 
 *SFR* 000000D3H   DATA     BYTE      T4L
@@ -883,7 +883,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D0H.6 SFRSYM    DATA     BIT       AC
       000000F6H   SFRSYM    DATA     BYTE      PWMIF
       000000C6H   SFRSYM    DATA     BYTE      ISP_TRIG
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 14
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 14
 
 
       000000E2H   SFRSYM    DATA     BYTE      P7M0
@@ -951,7 +951,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000090H.1 SFRSYM    DATA     BIT       LED_GREEN
       000000E7H   SFRSYM    DATA     BYTE      CMPCR2
       000000A8H.6 SFRSYM    DATA     BIT       ELVD
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 15
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 15
 
 
       00000080H.0 SFRSYM    DATA     BIT       P00
@@ -1019,7 +1019,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000B0H.7 SFRSYM    DATA     BIT       P37
       000000F8H.4 SFRSYM    DATA     BIT       P74
       000000E8H.5 SFRSYM    DATA     BIT       P65
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 16
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 16
 
 
       000000C8H.6 SFRSYM    DATA     BIT       P56
@@ -1087,7 +1087,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000F4H   SFRSYM    DATA     BYTE      PCA_PWM2
       000000BBH   SFRSYM    DATA     BYTE      VOCTRL
       00000083H   SFRSYM    DATA     BYTE      DPH
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 17
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 17
 
 
       000000F5H   SFRSYM    DATA     BYTE      PCA_PWM3
@@ -1155,7 +1155,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D8H.3 SFRSYM    DATA     BIT       CCF3
       00000096H   SFRSYM    DATA     BYTE      P2M0
       00000091H   SFRSYM    DATA     BYTE      P1M1
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 18
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 18
 
 
       00000080H   SFRSYM    DATA     BYTE      P0
@@ -1223,7 +1223,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000098H.0 SFRSYM    DATA     BIT       RI
       000000D0H.7 SFRSYM    DATA     BIT       CY
       00000098H.1 SFRSYM    DATA     BIT       TI
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 19
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 19
 
 
       000000C3H   SFRSYM    DATA     BYTE      IAP_ADDRH
@@ -1291,7 +1291,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000F8H.1 SFRSYM    DATA     BIT       P71
       000000E8H.2 SFRSYM    DATA     BIT       P62
       000000C8H.3 SFRSYM    DATA     BIT       P53
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 20
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 20
 
 
       000000C0H.4 SFRSYM    DATA     BIT       P44
@@ -1359,7 +1359,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D5H   SFRSYM    DATA     BYTE      TL3
       000000D5H   SFRSYM    DATA     BYTE      T3L
       000000D3H   SFRSYM    DATA     BYTE      TL4
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 21
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 21
 
 
       000000D3H   SFRSYM    DATA     BYTE      T4L
@@ -1427,7 +1427,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       010024D6H   LINE      CODE     ---       #47
       010024DAH   LINE      CODE     ---       #49
       ---         BLOCKEND  ---      ---       LVL=0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 22
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 22
 
 
 
@@ -1495,7 +1495,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       ---         BLOCKEND  ---      ---       LVL=1
       01000B4BH   LINE      CODE     ---       #100
       01000B4BH   LINE      CODE     ---       #101
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 23
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 23
 
 
       01000B4BH   LINE      CODE     ---       #102
@@ -1563,7 +1563,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01000CF6H   LINE      CODE     ---       #175
       01000CFDH   LINE      CODE     ---       #179
       01000D22H   LINE      CODE     ---       #181
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 24
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 24
 
 
       01000D34H   LINE      CODE     ---       #182
@@ -1631,7 +1631,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01002552H   LINE      CODE     ---       #258
       01002557H   LINE      CODE     ---       #259
       0100255CH   LINE      CODE     ---       #260
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 25
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 25
 
 
       0100255EH   LINE      CODE     ---       #261
@@ -1699,7 +1699,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01001EDCH   LINE      CODE     ---       #317
       01001EF5H   LINE      CODE     ---       #318
       01001F04H   LINE      CODE     ---       #319
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 26
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 26
 
 
       01001F0EH   LINE      CODE     ---       #321
@@ -1767,7 +1767,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D0H.6 SFRSYM    DATA     BIT       AC
       000000F6H   SFRSYM    DATA     BYTE      PWMIF
       000000C6H   SFRSYM    DATA     BYTE      ISP_TRIG
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 27
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 27
 
 
       000000E2H   SFRSYM    DATA     BYTE      P7M0
@@ -1835,7 +1835,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000090H.1 SFRSYM    DATA     BIT       LED_GREEN
       000000E7H   SFRSYM    DATA     BYTE      CMPCR2
       000000A8H.6 SFRSYM    DATA     BIT       ELVD
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 28
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 28
 
 
       00000080H.0 SFRSYM    DATA     BIT       P00
@@ -1903,7 +1903,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000B0H.7 SFRSYM    DATA     BIT       P37
       000000F8H.4 SFRSYM    DATA     BIT       P74
       000000E8H.5 SFRSYM    DATA     BIT       P65
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 29
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 29
 
 
       000000C8H.6 SFRSYM    DATA     BIT       P56
@@ -1971,7 +1971,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000F4H   SFRSYM    DATA     BYTE      PCA_PWM2
       000000BBH   SFRSYM    DATA     BYTE      VOCTRL
       00000083H   SFRSYM    DATA     BYTE      DPH
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 30
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 30
 
 
       000000F5H   SFRSYM    DATA     BYTE      PCA_PWM3
@@ -2039,7 +2039,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0100139CH   LINE      CODE     ---       #40
       0100139EH   LINE      CODE     ---       #41
       0100139EH   LINE      CODE     ---       #43
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 31
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 31
 
 
       010013A2H   LINE      CODE     ---       #45
@@ -2107,7 +2107,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01001512H   LINE      CODE     ---       #109
       01001514H   LINE      CODE     ---       #110
       01001514H   LINE      CODE     ---       #111
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 32
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 32
 
 
       01001514H   LINE      CODE     ---       #112
@@ -2175,7 +2175,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01002036H   LINE      CODE     ---       #189
       01002039H   LINE      CODE     ---       #190
       0100203FH   LINE      CODE     ---       #191
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 33
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 33
 
 
       01002042H   LINE      CODE     ---       #192
@@ -2243,7 +2243,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01000EA6H   LINE      CODE     ---       #262
       01000EACH   LINE      CODE     ---       #263
       01000EB0H   LINE      CODE     ---       #265
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 34
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 34
 
 
       01000EB2H   LINE      CODE     ---       #266
@@ -2311,7 +2311,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01000F7BH   LINE      CODE     ---       #347
       01000F7BH   LINE      CODE     ---       #348
       01000F81H   LINE      CODE     ---       #349
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 35
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 35
 
 
       01000F84H   LINE      CODE     ---       #351
@@ -2379,7 +2379,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       02000016H   SYMBOL    PDATA    BYTE      MSGControl
       ---         BLOCKEND  ---      ---       LVL=1
       010023A7H   LINE      CODE     ---       #426
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 36
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 36
 
 
       010023A7H   LINE      CODE     ---       #427
@@ -2447,7 +2447,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       010010F9H   LINE      CODE     ---       #497
       010010F9H   LINE      CODE     ---       #498
       010010F9H   LINE      CODE     ---       #500
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 37
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 37
 
 
       01001112H   LINE      CODE     ---       #502
@@ -2515,7 +2515,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       010016F6H   LINE      CODE     ---       #571
       01001707H   LINE      CODE     ---       #572
       01001710H   LINE      CODE     ---       #573
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 38
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 38
 
 
       01001721H   LINE      CODE     ---       #574
@@ -2583,7 +2583,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D8H.2 SFRSYM    DATA     BIT       CCF2
       00000092H   SFRSYM    DATA     BYTE      P1M0
       00000093H   SFRSYM    DATA     BYTE      P0M1
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 39
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 39
 
 
       000000D8H.3 SFRSYM    DATA     BIT       CCF3
@@ -2651,7 +2651,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000B8H   SFRSYM    DATA     BYTE      IP
       000000DEH   SFRSYM    DATA     BYTE      ADCCFG
       000000B0H.6 SFRSYM    DATA     BIT       ESP8266_RST
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 40
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 40
 
 
       00000098H.0 SFRSYM    DATA     BIT       RI
@@ -2719,7 +2719,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000A0H.5 SFRSYM    DATA     BIT       P25
       00000090H.6 SFRSYM    DATA     BIT       P16
       00000080H.7 SFRSYM    DATA     BIT       P07
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 41
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 41
 
 
       000000F8H.1 SFRSYM    DATA     BIT       P71
@@ -2787,7 +2787,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000098H.5 SFRSYM    DATA     BIT       SM2
       000000D7H   SFRSYM    DATA     BYTE      TL2
       000000D7H   SFRSYM    DATA     BYTE      T2L
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 42
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 42
 
 
       000000D5H   SFRSYM    DATA     BYTE      TL3
@@ -2855,7 +2855,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000B4H   SFRSYM    DATA     BYTE      P4M0
       000000B1H   SFRSYM    DATA     BYTE      P3M1
       000000A0H   SFRSYM    DATA     BYTE      P2
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 43
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 43
 
 
       000000ABH   SFRSYM    DATA     BYTE      WKTCH
@@ -2923,7 +2923,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000081H   SFRSYM    DATA     BYTE      SP
       000000A0H.7 SFRSYM    DATA     BIT       LCD1602_Busy
       000000B0H.5 SFRSYM    DATA     BIT       LCD1602_RS
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 44
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 44
 
 
       000000D9H   SFRSYM    DATA     BYTE      CMOD
@@ -2991,7 +2991,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000F8H.2 SFRSYM    DATA     BIT       P72
       000000E8H.3 SFRSYM    DATA     BIT       P63
       000000C8H.4 SFRSYM    DATA     BIT       P54
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 45
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 45
 
 
       000000C0H.5 SFRSYM    DATA     BIT       P45
@@ -3059,7 +3059,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D0H.3 SFRSYM    DATA     BIT       RS0
       000000C2H   SFRSYM    DATA     BYTE      IAP_DATA
       00000088H.4 SFRSYM    DATA     BIT       TR0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 46
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 46
 
 
       000000D0H.4 SFRSYM    DATA     BIT       RS1
@@ -3127,7 +3127,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01002108H   LINE      CODE     ---       #97
       0100210EH   LINE      CODE     ---       #98
       01002115H   LINE      CODE     ---       #100
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 47
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 47
 
 
       01002120H   LINE      CODE     ---       #101
@@ -3195,7 +3195,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000FDH   SFRSYM    DATA     BYTE      CCAP3H
       000000BDH   SFRSYM    DATA     BYTE      ADC_RES
       000000B6H   SFRSYM    DATA     BYTE      IP2H
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 48
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 48
 
 
       000000EAH   SFRSYM    DATA     BYTE      CCAP0L
@@ -3263,7 +3263,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000A0H.3 SFRSYM    DATA     BIT       P23
       00000090H.4 SFRSYM    DATA     BIT       P14
       00000080H.5 SFRSYM    DATA     BIT       P05
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 49
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 49
 
 
       000000C4H   SFRSYM    DATA     BYTE      ISP_ADDRL
@@ -3331,7 +3331,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0000008DH   SFRSYM    DATA     BYTE      TH1
       00000088H.0 SFRSYM    DATA     BIT       IT0
       000000A8H.0 SFRSYM    DATA     BIT       EX0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 50
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 50
 
 
       00000098H.3 SFRSYM    DATA     BIT       TB8
@@ -3399,7 +3399,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000CFH   SFRSYM    DATA     BYTE      SPDAT
       00000094H   SFRSYM    DATA     BYTE      P0M0
 
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 51
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 51
 
 
       0100263CH   BLOCK     CODE     ---       LVL=0
@@ -3467,7 +3467,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000C6H   SFRSYM    DATA     BYTE      ISP_TRIG
       000000E2H   SFRSYM    DATA     BYTE      P7M0
       000000CBH   SFRSYM    DATA     BYTE      P6M1
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 52
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 52
 
 
       000000C8H   SFRSYM    DATA     BYTE      P5
@@ -3535,7 +3535,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000A8H.6 SFRSYM    DATA     BIT       ELVD
       00000080H.0 SFRSYM    DATA     BIT       P00
       000000BCH   SFRSYM    DATA     BYTE      ADC_CONTR
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 53
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 53
 
 
       00000099H   SFRSYM    DATA     BYTE      SBUF
@@ -3603,7 +3603,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000E8H.5 SFRSYM    DATA     BIT       P65
       000000C8H.6 SFRSYM    DATA     BIT       P56
       000000C0H.7 SFRSYM    DATA     BIT       P47
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 54
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 54
 
 
       000000F8H.5 SFRSYM    DATA     BIT       P75
@@ -3671,7 +3671,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000083H   SFRSYM    DATA     BYTE      DPH
       000000F5H   SFRSYM    DATA     BYTE      PCA_PWM3
       000000D1H   SFRSYM    DATA     BYTE      T4T3M
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 55
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 55
 
 
       00000080H.7 SFRSYM    DATA     BIT       LED_BLUE
@@ -3739,7 +3739,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0100255FH   LINE      CODE     ---       #48
       0100255FH   LINE      CODE     ---       #49
       01002565H   LINE      CODE     ---       #50
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 56
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 56
 
 
       0100256BH   LINE      CODE     ---       #52
@@ -3807,7 +3807,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01002355H   LINE      CODE     ---       #102
       0100235BH   LINE      CODE     ---       #103
       01002360H   LINE      CODE     ---       #104
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 57
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 57
 
 
       01002363H   LINE      CODE     ---       #105
@@ -3875,7 +3875,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000A8H.5 SFRSYM    DATA     BIT       EADC
       000000A8H   SFRSYM    DATA     BYTE      IE
       000000E5H   SFRSYM    DATA     BYTE      DPH1
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 58
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 58
 
 
       000000E9H   SFRSYM    DATA     BYTE      CL
@@ -3943,7 +3943,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000098H   SFRSYM    DATA     BYTE      SCON
       000000C0H.0 SFRSYM    DATA     BIT       P40
       000000B0H.1 SFRSYM    DATA     BIT       P31
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 59
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 59
 
 
       000000A0H.2 SFRSYM    DATA     BIT       P22
@@ -4011,7 +4011,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000C7H   SFRSYM    DATA     BYTE      IAP_CONTR
       000000F1H   SFRSYM    DATA     BYTE      PWMCFG
       000000E0H   SFRSYM    DATA     BYTE      ACC
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 60
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 60
 
 
       000000A8H.1 SFRSYM    DATA     BIT       ET0
@@ -4079,7 +4079,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000C2H   SFRSYM    DATA     BYTE      ISP_DATA
       00000084H   SFRSYM    DATA     BYTE      S4CON
       000000EFH   SFRSYM    DATA     BYTE      AUXINTIF
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 61
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 61
 
 
       000000B9H   SFRSYM    DATA     BYTE      SADEN
@@ -4147,7 +4147,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       ---         BLOCKEND  ---      ---       LVL=0
 
       010025D7H   BLOCK     CODE     ---       LVL=0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 62
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 62
 
 
       010025D7H   BLOCK     CODE     NEAR LAB  LVL=1
@@ -4215,7 +4215,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000F8H   SFRSYM    DATA     BYTE      P7
       000000CEH   SFRSYM    DATA     BYTE      SPCTL
       000000D8H.7 SFRSYM    DATA     BIT       CF
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 63
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 63
 
 
       000000FEH   SFRSYM    DATA     BYTE      PWMCR
@@ -4283,7 +4283,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000A0H.0 SFRSYM    DATA     BIT       P20
       00000090H.1 SFRSYM    DATA     BIT       P11
       00000080H.2 SFRSYM    DATA     BIT       P02
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 64
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 64
 
 
       000000B0H.0 SFRSYM    DATA     BIT       P30
@@ -4351,7 +4351,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000088H.1 SFRSYM    DATA     BIT       IE0
       000000A1H   SFRSYM    DATA     BYTE      BUS_SPEED
       000000F8H.7 SFRSYM    DATA     BIT       P77
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 65
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 65
 
 
       00000088H.3 SFRSYM    DATA     BIT       IE1
@@ -4419,7 +4419,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0000009BH   SFRSYM    DATA     BYTE      S2BUF
       000000ADH   SFRSYM    DATA     BYTE      S3BUF
       00000085H   SFRSYM    DATA     BYTE      S4BUF
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 66
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 66
 
 
       00000098H.4 SFRSYM    DATA     BIT       REN
@@ -4487,7 +4487,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01001A61H   LINE      CODE     ---       #46
       01001A61H   LINE      CODE     ---       #47
       01001A64H   LINE      CODE     ---       #49
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 67
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 67
 
 
       01001A6DH   LINE      CODE     ---       #52
@@ -4555,7 +4555,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01002421H   LINE      CODE     ---       #118
       01002426H   LINE      CODE     ---       #119
       0100242DH   LINE      CODE     ---       #120
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 68
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 68
 
 
       01002432H   LINE      CODE     ---       #122
@@ -4623,7 +4623,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       00000096H   SFRSYM    DATA     BYTE      P2M0
       00000091H   SFRSYM    DATA     BYTE      P1M1
       00000080H   SFRSYM    DATA     BYTE      P0
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 69
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 69
 
 
       000000B2H   SFRSYM    DATA     BYTE      P3M0
@@ -4691,7 +4691,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D0H.7 SFRSYM    DATA     BIT       CY
       00000098H.1 SFRSYM    DATA     BIT       TI
       000000C3H   SFRSYM    DATA     BYTE      IAP_ADDRH
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 70
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 70
 
 
       000000C0H.1 SFRSYM    DATA     BIT       DS18B20_DATA
@@ -4759,7 +4759,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000E8H.2 SFRSYM    DATA     BIT       P62
       000000C8H.3 SFRSYM    DATA     BIT       P53
       000000C0H.4 SFRSYM    DATA     BIT       P44
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 71
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 71
 
 
       000000B0H.5 SFRSYM    DATA     BIT       P35
@@ -4827,7 +4827,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       000000D5H   SFRSYM    DATA     BYTE      T3L
       000000D3H   SFRSYM    DATA     BYTE      TL4
       000000D3H   SFRSYM    DATA     BYTE      T4L
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 72
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 72
 
 
       000000B8H.1 SFRSYM    DATA     BIT       PT0
@@ -4895,7 +4895,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       01000738H   PUBLIC    CODE     ---       _SPRINTF
 
       ---         MODULE    ---      ---       ?C?FPGETOPN
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 73
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 73
 
 
       010002CBH   PUBLIC    CODE     ---       ?C?FPGETOPN2
@@ -4963,7 +4963,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\STC8_Gizwits (MAIN)
       0100000EH   PUBLIC    CODE     ---       _STRLEN
 
       ---         MODULE    ---      ---       ?C?MEMSET
-LX51 LINKER/LOCATER V4.66.93.0                                                        04/10/2020  16:40:33  PAGE 74
+LX51 LINKER/LOCATER V4.66.93.0                                                        04/13/2020  12:40:54  PAGE 74
 
 
       010006B0H   PUBLIC    CODE     ---       ?C?MEMSET
