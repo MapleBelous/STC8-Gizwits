@@ -1,4 +1,5 @@
-"STC8A8KS4A64单片机+ESP8266-01连接机智云，上传DS18B20温度传感器温度值以及高低温报警，控制两路LED。" 
+"STC8A8KS4A64单片机通过机智云通讯协议连接ESP8266-01模块，连接机智云上传DS18B20温度传感器温度值以及高低温报警，控制两路LED。"
+CSDN简介：https://blog.csdn.net/belous_zxy/article/details/105485200
 
     Code - 代码文件夹
         main.c - 主函数 
