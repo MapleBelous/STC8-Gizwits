@@ -1,0 +1,197 @@
+C51 COMPILER V9.59.0.0   GIZWITS_PRODUCT                                                   04/01/2020 17:49:25 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GIZWITS_PRODUCT
+OBJECT MODULE PLACED IN .\Objects\gizwits_product.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Gizwits\gizwits_product.c LARGE OPTIMIZE(8,SPEED) BROWSE MODP2 INCD
+                    -IR(.\Code\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Utils) DEFINE(PROTOCOL_
+                    -DEBUG) DEBUG OBJECTEXTEND PRINT(.\Listings\gizwits_product.lst) OBJECT(.\Objects\gizwits_product.obj)
+
+line level    source
+
+   1          #include "gizwits_product.h"
+*** WARNING C322 IN LINE 478 OF Code\Gizwits\gizwits_protocol.h: unknown identifier
+   2          #include <stdio.h>
+   3          #include <string.h>
+   4          #include "uart.h"
+   5          
+   6          static uint32_t timerMsCount = 0;
+   7          
+   8          /** Current datapoint */
+   9          dataPoint_t currentDataPoint;
+  10          
+  11          /**
+  12          * @brief Event handling interface
+  13          
+  14          * Description:
+  15          
+  16          * 1. Users can customize the changes in WiFi module status
+  17          
+  18          * 2. Users can add data points in the function of event processing logic, such as calling the relevant har
+             -dware peripherals operating interface
+  19          
+  20          * @param [in] info: event queue
+  21          * @param [in] data: protocol data
+  22          * @param [in] len: protocol data length
+  23          * @return NULL
+  24          * @ref gizwits_protocol.h
+  25          */
+  26          int8_t gizwitsEventProcess(eventInfo_t *info, uint8_t *gizdata, uint32_t len)
+  27          {
+  28   1          uint8_t i = 0;
+  29   1          dataPoint_t *dataPointPtr = (dataPoint_t *)gizdata;
+  30   1          moduleStatusInfo_t *wifiData = (moduleStatusInfo_t *)gizdata;
+  31   1          protocolTime_t *ptime = (protocolTime_t *)gizdata;
+  32   1      
+  33   1      #if MODULE_TYPE == 1
+                  gprsInfo_t *gprsInfoData = (gprsInfo_t *)gizdata;
+              #else
+  36   1          moduleInfo_t *ptModuleInfo = (moduleInfo_t *)gizdata;
+  37   1      #endif
+  38   1      
+  39   1          if ((NULL == info) || (NULL == gizdata))
+  40   1              return -1;
+  41   1          for (i = 0; i < info->num; i++)
+  42   1          {
+  43   2              switch (info->event[i])
+  44   2              {
+  45   3              case EVENT_LED_RED:
+  46   3                  currentDataPoint.valueLED_RED = dataPointPtr->valueLED_RED;
+  47   3                  GIZWITS_LOG("Evt: EVENT_LED_RED %bd\r\n", currentDataPoint.valueLED_RED);
+  48   3                  if (0x01 == currentDataPoint.valueLED_RED)
+  49   3                      LED_RED = false;
+  50   3                  else
+  51   3                                      LED_RED = true;
+C51 COMPILER V9.59.0.0   GIZWITS_PRODUCT                                                   04/01/2020 17:49:25 PAGE 2   
+
+  52   3                  break;
+  53   3              case EVENT_LED_BLUE:
+  54   3                  currentDataPoint.valueLED_BLUE = dataPointPtr->valueLED_BLUE;
+  55   3                  GIZWITS_LOG("Evt: EVENT_LED_BLUE %bd\r\n", currentDataPoint.valueLED_BLUE);
+  56   3                  if (0x01 == currentDataPoint.valueLED_BLUE)
+  57   3                      LED_BLUE = false;
+  58   3                  else
+  59   3                                      LED_BLUE = true;
+  60   3                  break;
+  61   3      
+  62   3              case WIFI_SOFTAP:
+  63   3                  break;
+  64   3              case WIFI_AIRLINK:
+  65   3                  break;
+  66   3              case WIFI_STATION:
+  67   3                  break;
+  68   3              case WIFI_CON_ROUTER://wifi连接成功时
+  69   3                              LED_x = 0;
+  70   3                  break;
+  71   3              case WIFI_DISCON_ROUTER:
+  72   3                              
+  73   3                  break;
+  74   3              case WIFI_CON_M2M:
+  75   3      
+  76   3                  break;
+  77   3              case WIFI_DISCON_M2M:
+  78   3                  break;
+  79   3              case WIFI_RSSI:
+  80   3                  GIZWITS_LOG("RSSI %bd\r\n", wifiData->rssi);
+  81   3                  break;
+  82   3              case TRANSPARENT_DATA:
+  83   3                  GIZWITS_LOG("TRANSPARENT_DATA\r\n");
+  84   3                  //user handle , Fetch data from [data] , size is [len]
+  85   3                  break;
+  86   3              case WIFI_NTP:
+  87   3                  GIZWITS_LOG("WIFI_NTP : [%d-%d-%d %02d:%02d:%02d][%d]\r\n", ptime->year, ptime->month, ptime->
+             -day, ptime->hour, ptime->minute, ptime->second, ptime->ntp);
+  88   3                  break;
+  89   3              case MODULE_INFO:
+  90   3                  GIZWITS_LOG("MODULE INFO ...\r\n");
+  91   3      #if MODULE_TYPE
+                          GIZWITS_LOG("GPRS MODULE ...\r\n");
+                          //Format By gprsInfo_t
+              #else
+  95   3                  GIZWITS_LOG("WIF MODULE ...\r\n");
+  96   3                  //Format By moduleInfo_t
+  97   3                  GIZWITS_LOG("moduleType : [%d]\r\n", ptModuleInfo->moduleType);
+  98   3      #endif
+  99   3                  break;
+ 100   3              default:
+ 101   3                  break;
+ 102   3              }
+ 103   2          }
+ 104   1          return 0;
+ 105   1      }
+*** WARNING C280 IN LINE 26 OF Code\Gizwits\gizwits_product.c: 'len': unreferenced local variable
+ 106          
+ 107          /**
+ 108          * User data acquisition
+ 109          
+ 110          * Here users need to achieve in addition to data points other than the collection of data collection, can 
+             -be self-defined acquisition frequency and design data filtering algorithm
+C51 COMPILER V9.59.0.0   GIZWITS_PRODUCT                                                   04/01/2020 17:49:25 PAGE 3   
+
+ 111          
+ 112          * @param none
+ 113          * @return none
+ 114          */
+ 115          void userHandle(void)
+ 116          {
+ 117   1          currentDataPoint.valueLED_RED = ioread_b(LED_RED)?(0):(1);
+ 118   1          currentDataPoint.valueLED_BLUE = ioread_b(LED_BLUE)?(0):(1);
+ 119   1      }
+ 120          /**
+ 121          * @brief  gizTimerMs
+ 122          
+ 123          * millisecond timer maintenance function ,Millisecond increment , Overflow to zero
+ 124          
+ 125          * @param none
+ 126          * @return none
+ 127          */
+ 128          void gizTimerMs(void)
+ 129          {
+ 130   1          timerMsCount++;
+ 131   1      }
+ 132          
+ 133          //返回当前系统时间
+ 134          uint32_t gizGetTimerCount(void)
+ 135          {
+ 136   1          return timerMsCount;
+ 137   1      }
+ 138          
+ 139          //向wifi串口发送数据包
+ 140          int32_t uartWrite(uint8_t *buf, uint32_t len)
+ 141          {
+ 142   1          uint32_t i = 0;
+ 143   1      
+ 144   1          if (NULL == buf)
+ 145   1              return -1;//数据参数异常
+ 146   1      
+ 147   1      #ifdef PROTOCOL_DEBUG
+ 148   1          GIZWITS_LOG("MCU2WiFi[%lu:%lu]: ", gizGetTimerCount(), len);//记录向wifi发送的数据包
+ 149   1          for (i = 0; i < len; i++)
+ 150   1              GIZWITS_LOG("%02bx ", buf[i]);
+ 151   1          GIZWITS_LOG("\r\n");
+ 152   1      #endif
+ 153   1      
+ 154   1          for (i = 0; i < len; i++)//向wifi模块串口发送信息包
+ 155   1          {
+ 156   2                      uart4_send8(buf[i]);
+ 157   2              if (i >= 2 && buf[i] == 0xFF)
+ 158   2                              uart4_send8(0x55);
+ 159   2          }
+ 160   1          return len;
+ 161   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1010    ----
+   CONSTANT SIZE    =    209    ----
+   XDATA SIZE       =      6      34
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V9.59.0.0   GIZWITS_PRODUCT                                                   04/01/2020 17:49:25 PAGE 4   
+
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,107 @@
+C51 COMPILER V9.59.0.0   RINGBUFFER                                                        04/01/2020 17:49:25 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE RINGBUFFER
+OBJECT MODULE PLACED IN .\Objects\ringbuffer.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Utils\ringbuffer.c LARGE OPTIMIZE(8,SPEED) BROWSE MODP2 INCDIR(.\Co
+                    -de\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Utils) DEFINE(PROTOCOL_DEBUG) 
+                    -DEBUG OBJECTEXTEND PRINT(.\Listings\ringbuffer.lst) OBJECT(.\Objects\ringbuffer.obj)
+
+line level    source
+
+   1          #include "common.h"
+   2          #include "ringBuffer.h"
+   3          
+   4          //缓冲区指针绑定缓冲区
+   5          int8_t ICACHE_FLASH_ATTR rbCreate(rb_t *rb)
+   6          {
+   7   1          if (NULL == rb)
+   8   1              return -1;
+   9   1          rb->rbHead = rb->rbBuff;
+  10   1              rb->rbTail = rb->rbBuff;//初始化头尾指针为缓冲区开头
+  11   1          return 0;
+  12   1      }
+  13          //解除缓冲区指针绑定
+  14          int8_t ICACHE_FLASH_ATTR rbDelete(rb_t *rb)
+  15          {
+  16   1          if (NULL == rb)
+  17   1              return -1;
+  18   1          rb->rbBuff = NULL;
+  19   1          rb->rbHead = NULL;
+  20   1          rb->rbTail = NULL;
+  21   1          rb->rbCapacity = 0;
+  22   1          return 0;
+  23   1      }
+  24          //返回缓冲区链表大小
+  25          int32_t ICACHE_FLASH_ATTR rbCapacity(rb_t *rb)
+  26          {
+  27   1          if (NULL == rb)
+  28   1              return -1;
+  29   1          return rb->rbCapacity;
+  30   1      }
+  31          //返回缓冲区已写入大小
+  32          int32_t ICACHE_FLASH_ATTR rbCanRead(rb_t *rb)
+  33          {
+  34   1          if (NULL == rb)
+  35   1              return -1;
+  36   1          if (rb->rbHead == rb->rbTail)
+  37   1              return 0;
+  38   1          if (rb->rbHead < rb->rbTail)
+  39   1              return rb->rbTail - rb->rbHead;
+  40   1          return rbCapacity(rb) - (rb->rbHead - rb->rbTail);
+  41   1      }
+  42          //返回缓冲区可写入大小
+  43          int32_t ICACHE_FLASH_ATTR rbCanWrite(rb_t *rb)
+  44          {
+  45   1          if (NULL == rb)
+  46   1              return -1;
+  47   1              if((rb->rbHead)-(rb->rbTail)==1)
+  48   1                      return 0;
+  49   1              return rbCapacity(rb) - rbCanRead(rb);
+  50   1      }
+  51          //从缓冲区中读取一个字节
+  52          uint8_t ICACHE_FLASH_ATTR rbRead(rb_t *rb, char *datas)
+  53          {
+C51 COMPILER V9.59.0.0   RINGBUFFER                                                        04/01/2020 17:49:25 PAGE 2   
+
+  54   1              int32_t t=1;
+  55   1          if (NULL == rb||NULL == datas)//参数异常
+  56   1              return 0;
+  57   1              if (rbCanRead(rb)==0)//缓冲区为空，无法读出数据
+  58   1              return 2;
+  59   1              memcpy(datas,rb->rbHead,t);
+  60   1          rb->rbHead += t;
+  61   1              if(0 == rbCapacity(rb) - (rb->rbHead - rb->rbBuff))
+  62   1                      rb->rbHead = rb->rbBuff;
+  63   1          return 1;//返回实际读取到的长度
+  64   1      }
+  65          //向缓冲区写入一个字节数据
+  66          uint8_t ICACHE_FLASH_ATTR rbWrite(rb_t *rb, const char *datas)
+  67          {
+  68   1              int32_t t=1;
+  69   1          if ((NULL == rb) || (NULL == datas))
+  70   1              return 0;//异常参数
+  71   1          if (rbCanWrite(rb)==0)
+  72   1              return 2;//写入大小不足，缓冲区已满
+  73   1              memcpy(rb->rbTail,datas,t);
+  74   1          rb->rbTail += t;
+  75   1              if(rbCanRead(rb)>1)
+  76   1                      LED_x=0;
+  77   1              if(0 == rbCapacity(rb) - (rb->rbTail - rb->rbBuff))
+  78   1                      rb->rbTail = rb->rbBuff;
+  79   1              return 1;//正常返回
+  80   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1401    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      35
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

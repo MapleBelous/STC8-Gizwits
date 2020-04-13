@@ -1,0 +1,394 @@
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GIZWITSHANDLE
+OBJECT MODULE PLACED IN .\Objects\GizwitsHandle.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Gizwits\GizwitsHandle.c OMF2 OPTIMIZE(9,SPEED) BROWSE MODP2 INCDIR(
+                    -.\Code\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Sensor\DS18B20;.\Code\Sens
+                    -or\LCD1602) DEBUG PRINT(.\Listings\GizwitsHandle.lst) OBJECT(.\Objects\GizwitsHandle.obj)
+
+line level    source
+
+   1          #include "GizwitsHandle.h"
+   2          //------------------------------------------------------------------------------------------------//
+   3          xdata GizwitsActST GizwitsST; //GizwitsÈÎÎñÖ¸Ê¾Æ÷
+   4          
+   5          //GizwitsReceive´¦ÀíÄÚ´æ
+   6          static pdata ushort GizwitsReceiveCount; //µ±Ç°½ÓÊÕµ½µÄÊý¾Ý°ü³¤¶È
+   7          static pdata uchar GizwitsReceiveState;  //µ±Ç°½ÓÊÕÊý¾Ý°ü½ø¶È
+   8          static pdata uchar GizwitsReceiveLast;   //ÉÏÒ»¸ö½ÓÊÕÊý¾Ý,ÓÃÓÚ¹ýÂË0x55
+   9          //GizwitsReceive - Êý¾Ý°ü
+  10          pdata ushort GizwitsReceiveLen;                             //µ±Ç°½ÓÊÕµÄÊý¾Ý°üLenÖµ
+  11          pdata uchar GizwitsReceiveCmd;                              //µ±Ç°½ÓÊÕµÄÊý¾Ý°üCmdÖµ
+  12          pdata uchar GizwitsReceiveSn;                               //µ±Ç°½ÓÊÕµÄÊý¾Ý°üSnÖµ
+  13          pdata ushort GizwitsReceiveFlags;                           //µ±Ç°½ÓÊÕµÄÊý¾Ý°üFlagsÖµ
+  14          xdata uchar GizwitsReceiveBuffer[GizwitsReceiveBufferSize]; //µ±Ç°½ÓÊÕµÄÊý¾Ý°ü¸ºÔØ»º´æÇø
+  15          pdata ushort GizwitsReceiveIdx;                             //µ±Ç°½ÓÊÕµÄÊý¾Ý°ü¸ºÔØ³¤¶È
+  16          pdata uchar GizwitsReceiveSum;                              //µ±Ç°½ÓÊÕµÄÊý¾Ý°üSumÖµ
+  17          
+  18          //GizwitsSend - Êý¾Ý°ü
+  19          xdata uchar GizwitsSendBuffer[GizwitsSendBufferSize]; //·¢ËÍÊý¾Ý°ü»º´æÇø
+  20          pdata ushort GizwitsSendIdx;                          //·¢ËÍÊý¾Ý°ü»º´æÇøÏÂ±ê
+  21          
+  22          //GizwitsSendOld - GizwitsSendÊý¾Ý°üÀúÊ·¼ÇÂ¼,AnsÊý¾Ý°üGizwitsSendOldQSize¸ö,Ä©Î²¹Ì¶¨ÎªAskÊý¾Ý°ü
+  23          xdata uchar GizwitsSendOldBuffer[GizwitsSendOldQSize + 1][GizwitsSendBufferSize]; //·¢ËÍÊý¾Ý°ü»º´æÇøÀúÊ·¼Ç
+             -Â¼
+  24          xdata ushort GizwitsSendOldIdx[GizwitsSendOldQSize + 1];                          //·¢ËÍÊý¾Ý°ü»º´æÇøÏÂ±ê
+  25          xdata uchar GizwitsSendOldHead, GizwitsSendOldTail;                               //¶ÓÁÐÍ·Î²ÏÂ±ê
+  26          
+  27          #ifdef GizwitsUseWiFiRealTime
+  28          xdata GizwitsTimeFromWiFi GizwitsRealTime; //´ÓWiFiÄ£×é»ñÈ¡µÄÏÖÊµÊ±¼ä
+  29          #endif
+  30          #ifdef GizwitsUseWiFiProperty
+  31          xdata GizwitsPropertyFromWiFi GizwitsWiFiProperty; //´ÓWiFi»ñÈ¡WiFiµÄÉè±¸ÐÅÏ¢
+  32          #endif
+  33          
+  34          //------------------------------------------------------------------------------------------------//
+  35          static void GizwitsReceive(void);     //´ÓWiFi´®¿Ú»º´æÇø¶ÁÈ¡Êý¾Ý°ü
+  36          static void GizwitsReceiveInit(void); //³õÊ¼»¯/ÖØÆôGiawits´®¿Ú½ÓÊÕ
+  37          static uchar GizwitsSum(uchar);       //¼ÆËãÐ£ÑéºÍ
+  38          static uchar GizwitsSendOld(void);    //²éÕÒÒÑ·¢ËÍÊý¾Ý°üÀúÊ·¼ÇÂ¼,ÕÒµ½ÔòÖØÐÂ·¢ËÍ
+  39          //------------------------------------------------------------------------------------------------//
+  40          
+  41          void GizwitsInit(void) //³õÊ¼»¯GizwitsÄÚ´æ
+  42          {
+  43   1          GizwitsReceiveInit();
+  44   1          memset(&GizwitsST, 0, sizeof(GizwitsST));
+  45   1          GizwitsSendIdx = 0;
+  46   1          GizwitsSendOldHead = GizwitsSendOldTail = 0;
+  47   1          GizwitsST.GizwitsIllegalCode = 0;
+  48   1      #if LOGRANK_UART1 >= 2
+  49   1              printf("LOG#:GizwitsInit ok\r\n");
+  50   1      #endif
+  51   1      }
+  52          void GizwitsMainLoop(void) //GizwitsÖ÷Ñ­»·º¯Êý
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 2   
+
+  53          {
+  54   1          GizwitsReceive();
+  55   1          GizwitsAct();
+  56   1      }
+  57          void GizwitsSend(uchar Mode) //·¢ËÍGizwitsSendBuffer»º´æÇøÄÚµÄÊý¾Ý°ü&¼ÇÂ¼ÒÑ·¢ËÍÊý¾Ý°ü
+  58          {
+  59   1          pdata ushort i;
+  60   1          ++GizwitsSendIdx;                                      //¼ÓÉÏÐ£ÑéºÍ³¤¶È1
+  61   1          GizwitsSendBuffer[GizwitsSendIdx - 1] = GizwitsSum(1); //¼ÆËãÐ£ÑéºÍ
+  62   1      #if LOGRANK_UART1 >= 2
+  63   1          //ÈÕÖ¾¼ÇÂ¼MCU¼´½«·¢ËÍÊý¾Ý°ü
+  64   1          printf("LOG#:GizwitsSend   :%04x %02bx %02bx", GizwitsSendIdx, GizwitsSendBuffer[0], GizwitsSendBuffer
+             -[1]); //Len,Cmd
+  65   1          i = GizwitsSendBuffer[2], i <<= 8, i |= GizwitsSendBuffer[3];
+  66   1          printf(" %04x", i); //Flags
+  67   1          for (i = 4; i != GizwitsSendIdx - 1; ++i)
+  68   1              printf(" %02bx", GizwitsSendBuffer[i]); //¸ºÔØ
+  69   1          printf(" %02bx\r\n", GizwitsSendBuffer[GizwitsSendIdx - 1]);
+  70   1      #endif
+  71   1          uart4_send8(0xFF), uart4_send8(0xFF);                                          //·¢ËÍ¹Ì¶¨°üÍ·
+  72   1          uart4_send8((GizwitsSendIdx >> 8) & 0xFF), uart4_send8(GizwitsSendIdx & 0xFF); //·¢ËÍÊý¾Ý°ü³¤¶È
+  73   1          for (i = 0; i != GizwitsSendIdx; ++i)
+  74   1              uart4_send8(GizwitsSendBuffer[i]); //·¢ËÍÊý¾Ý°üdatas
+  75   1          //Ìí¼ÓÖÁÀúÊ·¼ÇÂ¼¶ÓÁÐ
+  76   1          if (Mode == 1) //Ans ÀúÊ·¼ÇÂ¼
+  77   1          {
+  78   2              if (GizwitsSendOldHead == GizwitsSendOldTail)
+  79   2              {
+  80   3                  if (GizwitsSendOldHead + 1 == GizwitsSendOldQSize)
+  81   3                      GizwitsSendOldHead = 0;
+  82   3                  else
+  83   3                      ++GizwitsSendOldHead;
+  84   3              }
+  85   2              GizwitsSendOldIdx[GizwitsSendOldTail] = GizwitsSendIdx;
+  86   2              for (i = 0; i != GizwitsSendIdx; ++i)
+  87   2                  GizwitsSendOldBuffer[GizwitsSendOldTail][i] = GizwitsSendBuffer[i];
+  88   2              if (GizwitsSendOldTail + 1 == GizwitsSendOldQSize)
+  89   2                  GizwitsSendOldTail = 0;
+  90   2              else
+  91   2                  ++GizwitsSendOldTail;
+  92   2          }
+  93   1          if (Mode == 2) //Ask ÀúÊ·¼ÇÂ¼
+  94   1          {
+  95   2              GizwitsSendOldIdx[GizwitsSendOldQSize] = GizwitsSendIdx;
+  96   2              for (i = 0; i != GizwitsSendIdx; ++i)
+  97   2                  GizwitsSendOldBuffer[GizwitsSendOldQSize][i] = GizwitsSendBuffer[i];
+  98   2          }
+  99   1      }
+ 100          static void GizwitsReceive(void) //´ÓWiFi´®¿Ú»º´æÇø¶ÁÈ¡Êý¾Ý°ü
+ 101          {
+ 102   1          pdata ushort Cidx1 = uart4_idx1, Cidx2 = uart4_idx2;
+ 103   1          //Ëø¶¨´®¿Ú»º´æÇøµ±Ç°¿É¶ÁÈ¡Êý¾Ý
+ 104   1          while (Cidx1 != Cidx2)
+ 105   1          {
+ 106   2              ++GizwitsReceiveCount; //ÊÕµ½µÄÊý¾Ý°ü³¤¶È+1
+ 107   2              if (GizwitsReceiveCount >= 4 &&
+ 108   2                  GizwitsReceiveLast == 0xFF && uart4_buffer[Cidx1] == 0x55) //·Ç¹Ì¶¨°üÍ·½×¶Î¹ýÂË0x55Êý¾Ý
+ 109   2                  goto WhileEnd;
+ 110   2              if (GizwitsReceiveCount >= 3)
+ 111   2                  GizwitsReceiveLast = uart4_buffer[Cidx1]; //¸üÐÂÀúÊ·Êý¾Ý
+ 112   2              switch (GizwitsReceiveState)
+ 113   2              {
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 3   
+
+ 114   3              case 0: //¹Ì¶¨°üÍ·½ÓÊÕ½×¶Î
+ 115   3                  if (uart4_buffer[Cidx1] == 0xFF)
+ 116   3                  {
+ 117   4                      if (GizwitsReceiveCount == 2)
+ 118   4                          ++GizwitsReceiveState;
+ 119   4                  }
+ 120   3                  else //·¢ÏÖÒì³£°üÍ·Êý¾Ý,ÖØÆôGiawits´®¿Ú½ÓÊÕ
+ 121   3                  {
+ 122   4      #if LOGRANK_UART1 >= 1
+ 123   4                      printf("ERR:GizwitsReceive can't find 0xFF\r\n");
+ 124   4      #endif
+ 125   4                      GizwitsReceiveInit();
+ 126   4                  }
+ 127   3                  break;
+ 128   3              case 1:
+ 129   3                  GizwitsReceiveLen <<= 8;
+ 130   3                  GizwitsReceiveLen |= uart4_buffer[Cidx1]; //¶ÁÈ¡Êý¾Ý°üLenÖµ
+ 131   3                  if (GizwitsReceiveCount == 4)
+ 132   3                  {
+ 133   4                      ++GizwitsReceiveState;
+ 134   4                      if (GizwitsReceiveLen - 5 > GizwitsReceiveBufferSize) //¸ºÔØ³¤¶È½«µ¼ÖÂÊý¾Ý°ü¸ºÔØ»º´æÇøÒç³ö
+ 135   4                      {
+ 136   5      #if LOGRANK_UART1 >= 1
+ 137   5                          printf("ERR:GizwitsReceive Len, but it will cause ReceiveBuffer overflow\r\n");
+ 138   5      #endif
+ 139   5                          GizwitsReceiveInit(); //ÖØÆôGiawits´®¿Ú½ÓÊÕ
+ 140   5                      }
+ 141   4                  }
+ 142   3                  break;
+ 143   3              case 2:
+ 144   3                  GizwitsReceiveCmd = uart4_buffer[Cidx1]; //¶ÁÈ¡Êý¾Ý°üCmdÖµ
+ 145   3                  ++GizwitsReceiveState;
+ 146   3                  break;
+ 147   3              case 3:
+ 148   3                  GizwitsReceiveSn = uart4_buffer[Cidx1]; ////¶ÁÈ¡Êý¾Ý°üSnÖµ
+ 149   3                  ++GizwitsReceiveState;
+ 150   3                  break;
+ 151   3              case 4:
+ 152   3                  GizwitsReceiveFlags <<= 8;
+ 153   3                  GizwitsReceiveFlags |= uart4_buffer[Cidx1]; //¶ÁÈ¡Êý¾Ý°üFlagsÖµ
+ 154   3                  if (GizwitsReceiveCount == 8)
+ 155   3                      if (GizwitsReceiveLen - 5 > 0) //ÅÐ¶ÏÊÇ·ñº¬ÓÐ¸ºÔØ
+ 156   3                          ++GizwitsReceiveState;
+ 157   3                      else
+ 158   3                          GizwitsReceiveState += 2;
+ 159   3                  break;
+ 160   3              case 5:
+ 161   3                  GizwitsReceiveBuffer[GizwitsReceiveIdx++] = uart4_buffer[Cidx1]; //¶ÁÈ¡Êý¾Ý°ü
+ 162   3                  if (GizwitsReceiveCount - 3 == GizwitsReceiveLen)                //Êý¾Ý°üÊ£Óà³¤¶ÈÎª1,½øÈë×îºó¶
+             -ÁÈ¡½×¶Î
+ 163   3                      ++GizwitsReceiveState;
+ 164   3                  break;
+ 165   3              case 6:
+ 166   3                  GizwitsReceiveSum = uart4_buffer[Cidx1]; ////¶ÁÈ¡Êý¾Ý°üSumÖµ
+ 167   3      #if LOGRANK_UART1 >= 1
+ 168   3                  if (GizwitsReceiveLen + 4 != GizwitsReceiveCount) //·¢ÏÖÊý¾Ý°ü¶ÁÈ¡³¤¶È²»×ã,Î´ÖªÔ­Òò
+ 169   3                      printf("ERR:GizwitsReceive receive one packet, but len invalid\r\n");
+ 170   3                  else
+ 171   3      #endif
+ 172   3                      if (GizwitsReceiveSum == GizwitsSum(0)) //Ð£ÑéºÍÕýÈ·,½ÓÊÕµ½Ò»¸öÊý¾Ý°ü
+ 173   3                  {
+ 174   4                      ushort ReCmdFlags = GizwitsAnalyseCmd(GizwitsReceiveCmd, GizwitsReceiveFlags); //·ÖÎöÊý¾Ý°
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 4   
+
+             -üCmd¼°¼ì²éFlags
+ 175   4                      uchar ReCmd = ReCmdFlags & 0xFF, ReFlags = (ReCmdFlags >> 8) & 0xFF;
+ 176   4      #if LOGRANK_UART1 >= 2
+ 177   4                      //ÈÕÖ¾»ã±¨MCU½ÓÊÕµ½¸ñÊ½¼°Ð£ÑéºÍÕýÈ·µÄÊý¾Ý°ü
+ 178   4                      ushort i;
+ 179   4                      printf("LOG#:GizwitsReceive:%04x %02bx %02bx %04x", GizwitsReceiveLen,
+ 180   4                             GizwitsReceiveCmd, GizwitsReceiveSn, GizwitsReceiveFlags); //Len,Cmd,Sn,Flags
+ 181   4                      for (i = 0; i != GizwitsReceiveIdx; ++i)
+ 182   4                          printf(" %02bx", GizwitsReceiveBuffer[i]); //¸ºÔØ
+ 183   4                      printf(" %02bx\r\n", GizwitsReceiveSum);       //Sum
+ 184   4      #endif
+ 185   4                      if (ReCmd == 0x00)
+ 186   4                      {
+ 187   5                          if (ReCmdFlags == ReCmd_FlagsERR) //Êý¾Ý°üFlagsÒì³£
+ 188   5                          {
+ 189   6      #if LOGRANK_UART1 >= 1
+ 190   6                              printf("ERR:Packet Flags error,Ans->0x12_0x03\r\n");
+ 191   6      #endif
+ 192   6                              GizwitsST.GizwitsIllegalCode = 0x03;
+ 193   6                              GizwitsHandleWiFiAsk(0x12);
+ 194   6                          }
+ 195   5                          else if (ReCmdFlags == ReCmd_CmdERR) //Êý¾Ý°üCmdÎÞ·¨Ê¶±ð
+ 196   5                          {
+ 197   6      #if LOGRANK_UART1 >= 1
+ 198   6                              printf("ERR:Packet Cmd invalid or error,Ans->0x12_0x02\r\n");
+ 199   6      #endif
+ 200   6                              GizwitsST.GizwitsIllegalCode = 0x02;
+ 201   6                              GizwitsHandleWiFiAsk(0x12);
+ 202   6                          }
+ 203   5                          else if (ReCmdFlags == ReCmd_MSGERR) //WiFi»ØÓ¦¶ÔÓ¦°üÒì³£,ÐèÒªÖØÐÂ·¢ËÍ
+ 204   5                          {
+ 205   6      #if LOGRANK_UART1 >= 2
+ 206   6                              printf("LOG#:Ask one packet is illegal,MCU will sent again\r\n");
+ 207   6      #endif
+ 208   6                              if (GizwitsSendOld() != 0)
+ 209   6                              {
+ 210   7      #if LOGRANK_UART1 >= 1
+ 211   7                                  printf("ERR: GizwitsSendOld Fail,Sn is not found,can't sent again\r\n");
+ 212   7      #endif
+ 213   7                              }
+ 214   6                          }
+ 215   5                          else
+ 216   5                          {
+ 217   6      #if LOGRANK_UART1 >= 1
+ 218   6                              printf("ERR:Packet unknown error,Ans->0x12_0x03\r\n");
+ 219   6      #endif
+ 220   6                              GizwitsST.GizwitsIllegalCode = 0x03;
+ 221   6                              GizwitsHandleWiFiAsk(0x12);
+ 222   6                          }
+ 223   5                      }
+ 224   4                      else
+ 225   4                      {
+ 226   5                          if (ReFlags == 0x00) //Êý¾Ý°üÊÇ Ask
+ 227   5                              GizwitsHandleWiFiAsk(ReCmd);
+ 228   5                          else //Êý¾Ý°üÊÇ Ans
+ 229   5                              GizwitsHandleWiFiAns(ReCmd);
+ 230   5                      }
+ 231   4                  }
+ 232   3                  else //Ð£ÑéºÍ´íÎó
+ 233   3                  {
+ 234   4      #if LOGRANK_UART1 >= 1
+ 235   4                      printf("ERR: Packet Sum check fail,Ans->0x12_0x01\r\n");
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 5   
+
+ 236   4      #endif
+ 237   4                      GizwitsST.GizwitsIllegalCode = 0x01;
+ 238   4                      GizwitsHandleWiFiAsk(0x12);
+ 239   4                  }
+ 240   3                  GizwitsReceiveInit(); //ÖØÆôGiawits´®¿Ú½ÓÊÕ
+ 241   3                  break;
+ 242   3              }
+ 243   2          WhileEnd:
+ 244   2              ++Cidx1; //¶ÁÈ¡Ëø¶¨ÇøÓòÏÂ1×Ö½Ú,ÊÍ·Å1×Ö½Ú´®¿Ú»º³åÇø¿Õ¼ä
+ 245   2              if (Cidx1 == uart4_buffer_size)
+ 246   2                  Cidx1 = 0, uart4_idx1 = 0;
+ 247   2              uart4_idx1 = Cidx1;
+ 248   2          }
+ 249   1      }
+ 250          static void GizwitsReceiveInit(void) //³õÊ¼»¯/ÖØÆôGiawits´®¿Ú½ÓÊÕ
+ 251          {
+ 252   1          GizwitsReceiveCount = 0;
+ 253   1          GizwitsReceiveState = 0;
+ 254   1          GizwitsReceiveLast = 0;
+ 255   1          GizwitsReceiveLen = 0;
+ 256   1          GizwitsReceiveCmd = 0;
+ 257   1          GizwitsReceiveSn = 0;
+ 258   1          GizwitsReceiveFlags = 0;
+ 259   1          GizwitsReceiveIdx = 0;
+ 260   1          GizwitsReceiveSum = 0;
+ 261   1      }
+ 262          static uchar GizwitsSendOld(void) //²éÕÒÒÑ·¢ËÍÊý¾Ý°üÀúÊ·¼ÇÂ¼,ÕÒµ½ÔòÖØÐÂ·¢ËÍ
+ 263          {
+ 264   1          //AskµÈ´ýAnsÖÐÇÒ¼ì²éSnÓëµÈ´ýAnsµÄAskÊÇ·ñÒ»ÖÂ
+ 265   1          if (GizwitsST.NeedAns = true && GizwitsReceiveSn == GizwitsSendOldBuffer[GizwitsSendOldQSize][1])
+ 266   1          {
+ 267   2              GizwitsReAsk(2); //Á¢¼´ÖØÐÂ·¢ËÍAsk
+ 268   2              return 0;
+ 269   2          }
+ 270   1          else //²»ÊÇAsk,²éÑ¯AnsÊÇ·ñÓÐ¶ÔÓ¦Sn
+ 271   1          {
+ 272   2              pdata uchar idx = GizwitsSendOldHead;
+ 273   2              while (idx != GizwitsSendOldTail)
+ 274   2              {
+ 275   3                  if (GizwitsReceiveSn == GizwitsSendOldBuffer[idx][1]) //³É¹¦ÔÚAnsÖÐÕÒµ½¶ÔÓ¦Sn
+ 276   3                  {
+ 277   4                      pdata ushort i;
+ 278   4                      uart4_send8(0xFF), uart4_send8(0xFF); //·¢ËÍ¹Ì¶¨°üÍ·
+ 279   4                      uart4_send8((GizwitsSendOldIdx[idx] >> 8) & 0xFF);
+ 280   4                      uart4_send8(GizwitsSendOldIdx[idx] & 0xFF); //·¢ËÍÊý¾Ý°ü³¤¶È
+ 281   4                      for (i = 0; i != GizwitsSendOldIdx[idx]; ++i)
+ 282   4                          uart4_send8(GizwitsSendOldBuffer[idx][i]); //·¢ËÍÊý¾Ý°üdatas
+ 283   4      #if LOGRANK_UART1 >= 2
+ 284   4                      printf("LOG#:GizwitsSendOld Ans ok\r\n");
+ 285   4      #endif
+ 286   4                      return 0;
+ 287   4                  }
+ 288   3                  if (idx == GizwitsSendOldQSize)
+ 289   3                      idx = 0;
+ 290   3                  else
+ 291   3                      ++idx;
+ 292   3              }
+ 293   2          }
+ 294   1          return 1; //ÀúÊ·¼ÇÂ¼ÖÐÎ´ÕÒµ½¶ÔÓ¦Sn,ÖØÐÂ·¢ËÍÊ§°Ü
+ 295   1      }
+ 296          void GizwitsReAsk(uchar Mode) //ÑÓÊ±µÈ´ýWiFiÄ£×éAns&ÖØÐÂ·¢ËÍMCUµÄAskÊý¾Ý°ü
+ 297          {
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 6   
+
+ 298   1          pdata ushort i;
+ 299   1          if (GizwitsST.NeedAns_RstCount == 3) //ÖØ·¢AskÈý´Î»¹Î´µÃµ½Ans,·ÅÆúµÈ´ýAnsÓëÖØ·¢
+ 300   1          {
+ 301   2              GizwitsST.NeedAns = 0;
+ 302   2              GizwitsST.NeedAns_RstCount = 0;
+ 303   2              return;
+ 304   2          }
+ 305   1          if (Mode == 1) //Ö÷º¯ÊýÈÎÎñÄ£Ê½,ÑÓÊ±µÈ´ý
+ 306   1          {
+ 307   2              if (GizwitsST.GizwitsSysMs - GizwitsST.NeedAns_Ms >= 200) //200msÎ´ÊÕµ½Ans,ÖØ·¢Ask
+ 308   2                  ++GizwitsST.NeedAns_RstCount;                  //¼ÇÂ¼Ò»´ÎÖØ·¢Ask´ÎÊý
+ 309   2              else
+ 310   2                  return; //¼ÌÐøµÈ´ýAns
+ 311   2          }
+ 312   1          if (Mode == 2) //WiFiÇëÇóÖØ·¢AskÄ£Ê½,Á¢¼´·¢ËÍ²¢ÖØÖÃµÈ´ýÊ±¼ä&´ÎÊý
+ 313   1              GizwitsST.NeedAns_RstCount = 0;
+ 314   1          uart4_send8(0xFF), uart4_send8(0xFF); //·¢ËÍ¹Ì¶¨°üÍ·
+ 315   1          uart4_send8((GizwitsSendOldIdx[GizwitsSendOldQSize] >> 8) & 0xFF);
+ 316   1          uart4_send8(GizwitsSendOldIdx[GizwitsSendOldQSize] & 0xFF); //·¢ËÍÊý¾Ý°ü³¤¶È
+ 317   1          for (i = 0; i != GizwitsSendOldIdx[GizwitsSendOldQSize]; ++i)
+ 318   1              uart4_send8(GizwitsSendOldBuffer[GizwitsSendOldQSize][i]); //·¢ËÍÊý¾Ý°üdatas
+ 319   1          GizwitsST.NeedAns_Ms = GizwitsST.GizwitsSysMs;                               //¼ÇÂ¼±¾´Î·¢ËÍAskµÄÊ±¼ä
+ 320   1      #if LOGRANK_UART1 >= 2
+ 321   1          printf("LOG#:GizwitsReAsk Cnt-%bu\r\n", GizwitsST.NeedAns_RstCount); //ÈÕÖ¾¼ÇÂ¼ÖØÐÂ·¢ËÍAsk¼°ÒÑÖØ·¢´ÎÊý
+ 322   1      #endif
+ 323   1      }
+ 324          static uchar GizwitsSum(uchar Mode) //¼ÆËãÐ£ÑéºÍ
+ 325          {
+ 326   1          pdata uchar Sum = 0;
+ 327   1          pdata ushort i;
+ 328   1          switch (Mode)
+ 329   1          {
+ 330   2          case 0: //GizwitsReceiveÄ£Ê½
+ 331   2              Sum += (GizwitsReceiveLen >> 8) & 0xFF;
+ 332   2              Sum += (GizwitsReceiveLen)&0xFF;
+ 333   2              Sum += GizwitsReceiveCmd;
+ 334   2              Sum += GizwitsReceiveSn;
+ 335   2              Sum += (GizwitsReceiveFlags >> 8) & 0xFF;
+ 336   2              Sum += (GizwitsReceiveFlags)&0xFF;
+ 337   2              for (i = 0; i != GizwitsReceiveIdx; ++i)
+ 338   2                  Sum += GizwitsReceiveBuffer[i];
+ 339   2              break;
+ 340   2          case 1: //GizwitsSendÄ£Ê½
+ 341   2              Sum += (GizwitsSendIdx >> 8) & 0xFF;
+ 342   2              Sum += (GizwitsSendIdx)&0xFF;
+ 343   2              for (i = 0; i < GizwitsSendIdx - 1; ++i)
+ 344   2                  Sum += GizwitsSendBuffer[i];
+ 345   2              break;
+ 346   2          }
+ 347   1          return Sum;
+ 348   1      }
+ 349          //------------------------------------------------------------------------------------------------//
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1928    ----
+   CONSTANT SIZE    =    629    ----
+   XDATA SIZE       =   3113    ----
+   PDATA SIZE       =     15      14
+   DATA SIZE        =   ----       8
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.59.0.0   GIZWITSHANDLE                                                     04/10/2020 16:40:32 PAGE 7   
+
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

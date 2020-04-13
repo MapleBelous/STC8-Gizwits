@@ -1,0 +1,160 @@
+C51 COMPILER V9.59.0.0   ESP8266_AT                                                        03/31/2020 21:04:06 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE ESP8266_AT
+OBJECT MODULE PLACED IN .\Objects\esp8266_AT.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE esp8266_AT.c OPTIMIZE(9,SPEED) BROWSE MODP2 DEBUG OBJECTEXTEND PRINT(.\L
+                    -istings\esp8266_AT.lst) OBJECT(.\Objects\esp8266_AT.obj)
+
+line level    source
+
+   1          #include "esp8266_AT.h"
+   2          
+   3          code uchar esp8266_AT_enter[]="\r\n";//»Ø³µ
+   4          //»ù±¾Ö¸Áî
+   5          code uchar esp8266_AT_test[]="AT\r\n";//²âÊÔ
+   6          code uchar esp8266_AT_ret[]="AT+RST\r\n";//Èí¼þ¸´Î»
+   7          code uchar esp8266_AT_restore[]="AT+RESTORE\r\n";//»Ö¸´³ö³§ÉèÖÃ
+   8          code uchar esp8266_AT_ate[]="ATE\r\n";//¿ª¹Ø»ØÏÔ¹¦ÄÜ
+   9          code uchar esp8266_AT_gmr[]="AT+GMR\r\n";//²éÑ¯°æ±¾ÐÅÏ¢
+  10          //ÉèÖÃ´®¿Ú
+  11          code uchar esp8266_AT_uartcur[]="AT+UART_CUR=115200,8,1,1,0\r\n";//ÉèÖÃ´®¿Ú·½Ê½£¨²»±£´æ£©£¬²¨ÌØÂÊ/Êý¾ÝÎ»/Í
+             -£Ö¹Î»/Ð£ÑéÎ»/Á÷¿Ø
+  12          code uchar esp8266_AT_uartdef[]="AT+UART_DEF=115200,8,1,1,0\r\n";//ÉèÖÃ´®¿Ú·½Ê½£¨±£´æ£©£¬²¨ÌØÂÊ/Êý¾ÝÎ»/Í£Ö
+             -¹Î»/Ð£ÑéÎ»/Á÷¿Ø
+  13          //Ë¯Ãß
+  14          code uchar esp8266_AT_sleep_q[]="AT+SLEEP?\r\n";//²éÑ¯µ±Ç°Ë¯ÃßÄ£Ê½
+  15          code uchar esp8266_AT_sleep[]="AT+SLEEP=0\r\n";//ÉèÖÃË¯ÃßÄ£Ê½£¬0½ûÓÃ/1Çá¶È/2ÖÐ¶È
+  16          //wifiÄ£Ê½
+  17          code uchar esp8266_AT_cwmodecur_q[]="AT+CWMODE_CUR?";//²éÑ¯µ±Ç°wifiÄ£Ê½(²»±£´æ)
+  18          code uchar esp8266_AT_cwmodecur[]="AT+CWMODE_CUR=1";//ÉèÖÃµ±Ç°wifiÄ£Ê½(²»±£´æ),1:station,2:ap,3:ap+station
+  19          code uchar esp8266_AT_cwmodedef_q[]="AT+CWMODE_DEF?";//²éÑ¯µ±Ç°wifiÄ£Ê½(±£´æ)
+  20          code uchar esp8266_AT_cwmodedef[]="AT+CWMODE_DEF=1";//ÉèÖÃµ±Ç°wifiÄ£Ê½(±£´æ),1:station,2:ap,3:ap+station
+  21          //stationÄ£Ê½Á¬½Óor¶Ï¿ªAP(±£´æ+²»±£´æ)
+  22          code uchar esp8266_AT_cwjapcur_q[]="AT+CWJAP_CUR?\r\n";//²éÑ¯stationµ±Ç°Á¬½ÓµÄAP
+  23          code uchar esp8266_AT_cwjapcur[]="AT+CWJAP_CUR=\"abc\",\"0123456789\",\"ca:d7:19:d8:a6:44\r\n";//SSID,pass
+             -ward,mac(¿ÉÑ¡)
+  24          code uchar esp8266_AT_cwjapdef_q[]="AT+CWJAP_DEF?\r\n";//²éÑ¯stationµ±Ç°Á¬½ÓµÄAP
+  25          code uchar esp8266_AT_cwjapdef[]="AT+CWJAP_DEF=\"abc\",\"0123456789\",\"ca:d7:19:d8:a6:44\r\n";//SSID,pass
+             -ward,mac(¿ÉÑ¡)
+  26          code uchar esp8266_AT_cwqap[]="AT+CWQAP\r\n";//¶Ï¿ªAP
+  27          //É¨Ãèwifi AP
+  28          code uchar esp8266_AT_cwlapopt[]="AT+CWLAPOPT=1,127\r\n";//ÉèÖÃcwlapÖ¸ÁîÊôÐÔ£¬(ÊÇ·ñ°´ÐÅºÅÇ¿¶ÈÅÅÐò£¬ÐèÒªÕÚ¸
+             -ÇµÄÊôÐÔ)
+  29          code uchar esp8266_AT_cwlap[]="AT+CWLAP\r\n";
+  30          //ÁÐ³öµ±Ç°¿ÉÓÃAP£¬¼Ó=<ssid>[,<mac>,<ch>]ÏÔÊ¾ÌØ¶¨Ìõ¼þµÄAP
+  31          //<ecn>¼ÓÃÜ·½Ê½0.OPEN,1.WEP,2.WPA_PSK,3.WPA2_PSK,4.WPA_WPA2_PSK,5.WPA2_Enterprise(Ä¿Ç°²»Ö§³ÖÁ¬½ÓÕâÖÖ¼ÓÃÜ)
+  32          //<ssid>id
+  33          //<rssi>ÐÅºÅÇ¿¶È 
+  34          //<mac>APµÄMACµØÖ·
+  35          //<ch>ÐÅµÀ
+  36          //<freq offset> APÆµÆ«(KHz),³Ë2.4=ppmÖµ
+  37          //<freq calibration>ÆµÆ«Ð£×¼Öµ
+  38          
+  39          //APÄ£Ê½(±£´æ+²»±£´æ)
+  40          code uchar esp8266_AT_cwsapcur_q[]="AT+CWSAP_CUR?\r\n";//²éÑ¯APµ±Ç°ÅäÖÃ²ÎÊý
+  41          code uchar esp8266_AT_cwsapcur[]="AT+CWSAP_CUR=\"ESP8266\",\"1234567890\",5,3\r\n";
+  42          //SSID,passward,ch,ecn¼ÓÃÜ·½Ê½0:OPEN2:WPA_PSK3:WPA2_PSK4:WPA_WPA2_PSK
+  43          //,(¿ÉÑ¡)max conn×î´óÁ¬½ÓÊý1-4,(¿ÉÑ¡)ÊÇ·ñ²»¹ã²¥
+  44          code uchar esp8266_AT_cwsapdef_q[]="AT+CWSAP_DEF?\r\n";
+  45          code uchar esp8266_AT_cwsapdef[]="AT+CWSAP_DEF=\"abc\",\"0123456789\",\"ca:d7:19:d8:a6:44\r\n";
+  46          code uchar esp8266_AT_cwlif[]="AT+CWLIF\r\n";//²éÑ¯Á¬½Óµ½esp8266 APµÄstationÐÅÏ¢,ÐëË«·½¶¼ÊÇDHCP
+  47          
+  48          //ÉèÖÃDHCP
+  49          code uchar esp8266_AT_cwdhcpcur_q[]="AT+CWDHCP_CUR?\r\n";//²éÑ¯DHCPÊÇ·ñÊ¹ÄÜ
+C51 COMPILER V9.59.0.0   ESP8266_AT                                                        03/31/2020 21:04:06 PAGE 2   
+
+  50          code uchar esp8266_AT_cwdhcpcur[]="AT+CWDHCP_CUR=0,1\r\n";//ÉèÖÃDHCP Ä£Ê½,¿ª±Õ
+  51          code uchar esp8266_AT_cwdhcpdef_q[]="AT+CWDHCP_DEF?\r\n";
+  52          code uchar esp8266_AT_cwdhcpdef[]="AT+CWDHCP_DEF=0,1\r\n";
+  53          
+  54          //ÉèÖÃAPÏÂDHCP·ÖÅäIPµÄ·¶Î§
+  55          
+  56          //ÉÏµçÊÇ·ñ×Ô¶¯Á¬½ÓAP
+  57          
+  58          //ÉèÖÃstationµÄMACµØÖ·
+  59          
+  60          //ÉèÖÃAPµÄMACµØÖ·
+  61          
+  62          //ÉèÖÃstationµÄ¾²Ì¬IP
+  63          
+  64          //ÉèÖÃAPµÄ¾²Ì¬IP
+  65          
+  66          //²éÑ¯ÍøÂçÁ¬½ÓÐÅÏ¢
+  67          code uchar esp8266_AT_cipstatus[]="AT+CIPSTATUS\r\n";
+  68          
+  69          //ÓòÃû½âÎö¹¦ÄÜ
+  70          code uchar esp8266_AT_cipdomain[]="AT+CIPDOMAIN=\"iot.espressif.cn\"\r\n";
+  71          
+  72          //½¨Á¢¡¾TCP¡¿/UDP/SSLÁ¬½Ó
+  73          code uchar esp8266_AT_cipstart[]="AT+CIPSTART=\"SSL\",\"iot.espressif.cn\",8443\r\n";
+  74          //=[<link ID>,]<type>,<remote IP>,<remote port>[,<TCP keep alive>]
+  75          //   ÍøÂçÁ¬½Ó1-4ÓÃÓÚ¶àÁ´½Ó£¬Á¬½ÓÀàÐÍ£¬Ô¶¶ËIPµØÖ·£¬Ô¶¶Ë¶Ë¿ÚºÅ£¬TCP±£»îÊ±¼äÄ¬ÈÏ¹Ø±Õ
+  76          
+  77          //ÉèÖÃSSL bufferÈÝÁ¿
+  78          
+  79          //·¢ËÍÊý¾Ý
+  80          code uchar esp8266_AT_cipsend[]="AT+CIPSEND\r\n";
+  81          //µ¥Á´½ÓÊ±(+CIPMUX=0)AT+CIPSEND=<length>
+  82          //¶àÁ´½ÓÊ±(+CIPMUX=1)AT+CIPSEND=<link ID>,<length>
+  83          //ÊÕµ½ÃüÁîºó»»ÐÐ·µ»Ø>£¬¿ªÊ¼½ÓÊÕ´®¿ÚÊý¾Ý£¬Ö±µ½\0»ò³¤¶ÈÂúlength£¬·¢ËÍ\0Ðë\\0
+  84          //Í¸´«Ê±£¬Ã¿°ü×î´ó2048×Ö½Ú»òÕßÒÔ20ms¼ä¸ôÇø·Ö¡£µ¥¶À+++Ê±£¬ÍË³ö·µ»ØATÖ¸ÁîÄ£Ê½£¬ÖÁÉÙ¼ä¸ô1sºó·¢ËÍÏÂÒ»ÌõÖ¸Áî
+  85          
+  86          //Êý¾ÝÐ´ÈëTCP·¢°ü»º´æ
+  87          //ÖØÐÂ¼ÆÊý
+  88          //²éÑ¯TCP·¢°ü»º´æ×´Ì¬
+  89          //²éÑ¯Ð´ÈëTCP·¢°ü»º´æµÄÄ³°üÊÇ·ñ·¢ËÍ³É¹¦
+  90          
+  91          //¹Ø±ÕTCP/UDP/SSL´«Êä
+  92          code uchar esp8266_AT_cipclose[]="AT+CIPCLOSE\r\n";
+  93          //¶àÁ´½ÓÊ±£¬¼ÓÉÏ=<link ID>
+  94          
+  95          //²éÑ¯±¾µØIPµØÖ·(APºÍstation)
+  96          code uchar esp8266_AT_cifsr[]="AT+CIFSR\r\n";
+  97          
+  98          //¶àÁ´½Ó
+  99          code uchar esp8266_AT_cipmux_q[]="AT+CIPMUX?\r\n";
+ 100          code uchar esp8266_AT_cipmux[]="AT+CIPMUX=1\r\n";//1µ¥2¶à
+ 101          
+ 102          //½¨Á¢TCP server
+ 103          code uchar esp8266_AT_cipserver[]="AT+CIPSERVER=1,1001\r\n";
+ 104          //AT+ CIPSERVER=<mode>[,<port>],¶àÁ´½ÓÄ£Ê½ÏÂ²ÅÄÜ¿ªÆô£¬¶Ë¿ÚºÅÄ¬ÈÏ333
+ 105          
+ 106          //ÉèÖÃ´«ÊäÄ£Ê½
+ 107          code uchar esp8266_AT_cipmode_q[]="AT+CIPMODE?\r\n";
+ 108          code uchar esp8266_AT_cipmode[]="AT+CIPMODE=1\r\n";//0ÆÕÍ¨£¬1Í¸´«(½öÖ§³ÖTCPµ¥Á¬½ÓºÍUDP¹Ì¶¨Í¨ÐÅ¶Ô¶Ë)
+ 109          
+ 110          //±£´æÍ¸´«µ½FLASH
+ 111          
+C51 COMPILER V9.59.0.0   ESP8266_AT                                                        03/31/2020 21:04:06 PAGE 3   
+
+ 112          //ÉèÖÃTCP server³¬Ê±Ê±¼ä
+ 113          code uchar esp8266_AT_cipsto_q[]="AT+CIPSTO?\r\n";
+ 114          code uchar esp8266_AT_cipsto[]="AT+CIPSTO=60\r\n";//0~7200s£¬0Ê±ÓÀÔ¶²»³¬Ê±£¨²»ÒªÕâÃ´×ö£©
+ 115          
+ 116          //ping¹¦ÄÜ
+ 117          code uchar esp8266_AT_ping[]="AT+PING=\"www.baidu.com\"\r\n";
+ 118          
+ 119          //½ÓÊÕÊý¾ÝÊ±ÊÇ·ñÌáÊ¾¶Ô¶ËIPºÍ¶Ë¿Ú
+ 120          code uchar esp8266_AT_cipdinfo[]="AT+CIPDINFO=1\r\n";//1ÏÔÊ¾
+ 121          
+ 122          //+IPD ½ÓÊÕÍøÂçÊý¾Ý
+ 123          //+IPD,<link ID>,<len>[,<remote IP>,<remote port>]:<data> ¶àÁ¬½Ó£¬µ¥Á¬½ÓÊ±Ã»ÓÐlink ID
+ 124          
+ 125          
+ 126          
+ 127          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =    861    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

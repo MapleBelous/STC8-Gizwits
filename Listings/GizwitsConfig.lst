@@ -1,0 +1,52 @@
+C51 COMPILER V9.59.0.0   GIZWITSCONFIG                                                     04/10/2020 16:40:32 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GIZWITSCONFIG
+OBJECT MODULE PLACED IN .\Objects\GizwitsConfig.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Gizwits\GizwitsConfig.c OMF2 OPTIMIZE(9,SPEED) BROWSE MODP2 INCDIR(
+                    -.\Code\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Sensor\DS18B20;.\Code\Sens
+                    -or\LCD1602) DEBUG PRINT(.\Listings\GizwitsConfig.lst) OBJECT(.\Objects\GizwitsConfig.obj)
+
+line level    source
+
+   1          #include "GizwitsConfig.h"
+   2          //------------------------------------------------------------------------------------------------//
+   3          
+   4          //Gizwits System Set for WiFiAsk, AnsCmd = 0x02
+   5          code uchar SerialProtocolVer[8] = {"00000004"};//通用串口协议版本号
+   6          code uchar BusinessProtocolVer[8] = {"00000002"};//义务协议版本号
+   7          code uchar HardwareVer[8] = {"Ha200402"};//硬件版本号
+   8          code uchar SoftwareVer[8] = {"Hs200407"};//软件版本号
+   9          code uchar ProductKey[32] = {"c6491f9bc91b497c80fef21ad01db936"};
+  10          code ushort BindingStateSec = 30;//可绑定状态失效时间(s),0表示随时可绑定
+  11          code uchar DeviceProperties[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//设备属性
+  12          code uchar ProductSecret[32] = {"21a08167d7d84d43aa525fc56170e7fd"};
+  13          code ushort DataLen = 40;//环境参数长度,必须精准无误,=strlen(Data)
+  14          code uchar Data[] = "apName=ESP8266_SoftAPMode&apPwd=asdf1234";//环境参数
+  15          
+  16          //ConfigMode4 WiFi Config for MCUAsk, AskCmd = 0x09
+  17          ConfigMode4ArrayMode uchar ConfigMode4Ssid[] = "BelousWIFI";
+  18          ConfigMode4ArrayMode uchar ConfigMode4Password[] = "12340987";
+  19          ConfigMode4ArrayMode uchar ConfigMode4Bssid[] = "";
+  20          ConfigMode4ArrayMode uchar ConfigMode4Tz[] = "";
+  21          ConfigMode4ArrayMode uchar ConfigMode4ServerName[] = "";
+  22          
+  23          //------------------------------------------------------------------------------------------------//
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =    172    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

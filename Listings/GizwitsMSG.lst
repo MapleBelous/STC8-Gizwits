@@ -1,0 +1,671 @@
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GIZWITSMSG
+OBJECT MODULE PLACED IN .\Objects\GizwitsMSG.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Gizwits\GizwitsMSG.c OMF2 OPTIMIZE(9,SPEED) BROWSE MODP2 INCDIR(.\C
+                    -ode\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Sensor\DS18B20;.\Code\Sensor\
+                    -LCD1602) DEBUG PRINT(.\Listings\GizwitsMSG.lst) OBJECT(.\Objects\GizwitsMSG.obj)
+
+line level    source
+
+   1          #include "GizwitsMSG.h"
+   2          //------------------------------------------------------------------------------------------------//
+   3          static void GizwitsSetFifiControl(void); //¥”GizwitsReceiveBuffer÷–∂¡»°øÿ÷∆ ˝æ›,¡¢º¥÷¥––
+   4          static void GizwitsGetDevState(void);    //œÚGizwitsReceiveBuffer÷––¥»Î…Ë±∏◊¥Ã¨–≈œ¢
+   5          
+   6          // Ù”⁄GizwitsHandleWiFiAskµƒ◊”∫Ø ˝,Cmd=0x0E,”√”⁄∂¡»°WiFiƒ£◊Èπ§◊˜◊¥Ã¨
+   7          static void GizwitsWiFiAsk0x0E(void);
+   8          // Ù”⁄GizwitsHandleWiFiAnsµƒ◊”∫Ø ˝,Cmd=0x17«“ π”√WiFiµƒRealTime–≈œ¢ ±Ã·»° ˝æ›
+   9          static void GizwitsWiFiAns0x17(void);
+  10          // Ù”⁄GizwitsHandleWiFiAnsµƒ◊”∫Ø ˝,Cmd=0x21«“ π”√WiFiµƒ…Ë±∏–≈œ¢ ±Ã·»° ˝æ›
+  11          static void GizwitsWiFiAns0x21(void);
+  12          // Ù”⁄GizwitsHandleMCUAskµƒ◊”∫Ø ˝,Cmd=0x09«“GizwitsConfigMode=0x04 ±–¥»ÎSendBuffer÷–WiFi≈‰÷√–≈œ¢
+  13          static void GizwitsMCUAsk0x09(void);
+  14          
+  15          //------------------------------------------------------------------------------------------------//
+  16          void GizwitsAct(void) //¥¶¿Ìµ±«∞»ŒŒÒ
+  17          {
+  18   1          //GizwitsœµÕ≥∂® ±π“∆»ŒŒÒ
+  19   1      #if GizwitsNeedReportMs != 0
+                  if (GizwitsST.NeedReport == false && GizwitsST.GizwitsSysMs - GizwitsST.NeedReport_Ms >= GizwitsNeedRe
+             -portMs)
+                      GizwitsST.NeedReport = true; //–Ë“™…œ±®…Ë±∏◊¥Ã¨
+              #endif
+  23   1          //GizwitsœµÕ≥¥˝÷¥––»ŒŒÒ
+  24   1          if (GizwitsST.NeedReport == true && GizwitsHandleMCUAsk(0x05) == 0) //…œ±®ÕÍ≥…,∏¸–¬…œ±® ±º‰
+  25   1              GizwitsST.NeedReport = false, GizwitsST.NeedReport_Ms = GizwitsST.GizwitsSysMs;
+  26   1          if (GizwitsST.NeedAns == true) //µ»¥˝Ans÷–
+  27   1              GizwitsReAsk(1);
+  28   1          if (GizwitsST.NeedRstMCU == true && (GizwitsST.GizwitsSysMs - GizwitsST.NeedRstMCU_Ms >= 600))
+  29   1              MCURST(); //600ms—” ±∫Û÷ÿ∆ÙMCU
+  30   1      
+  31   1              //Sensor∂® ±π“∆»ŒŒÒ
+  32   1      #if DS18B20NeedReadMs != 0
+  33   1          if (GizwitsST.NeedReadDS18B20 == false && GizwitsST.GizwitsSysMs - GizwitsST.NeedReadDS18B20_Ms >= DS1
+             -8B20NeedReadMs && DS18B20ConvertTemperature() == EXIT_SUCCESS) //–Ë“™∂¡»°DS18B20Œ¬∂»÷µ,«“Œ¬∂»◊™ªª÷∏¡Ó≥…π¶
+  34   1              GizwitsST.NeedReadDS18B20 = true, GizwitsST.NeedReadDS18B20_Ms = GizwitsST.GizwitsSysMs;          
+             -                                                               //µ»¥˝∂¡»°Œ¬∂»÷µ
+  35   1      #endif
+  36   1          //Sensor¥˝÷¥––»ŒŒÒ
+  37   1          if (GizwitsST.NeedReadDS18B20 == true && GizwitsST.GizwitsSysMs - GizwitsST.NeedReadDS18B20_Ms >= DS18
+             -B20ConvertTMaxTime[DS18B20ST.ResolutionMode] && DS18B20GetTemperature() == EXIT_SUCCESS) //≥…π¶÷¥––∂¡»°Œ¬∂»÷µ
+  38   1              GizwitsST.NeedReadDS18B20 = false, GizwitsST.NeedReadDS18B20_Ms = GizwitsST.GizwitsSysMs;
+  39   1      }
+  40          void GizwitsHandleWiFiAsk(uchar Cmd) //≤Œ ˝Cmd: MCU¥˝”¶¥√¸¡Ó
+  41          {
+  42   1      #if LOGRANK_UART1 >= 2
+  43   1          printf("LOG#:Handle WiFi Ask[%02bx]\r\n", Cmd); //»’÷æº«¬ºMCU¥¶¿ÌWiFi Ask,CmdŒ™MCU¥˝∑¢ÀÕAns
+  44   1      #endif
+  45   1          GizwitsSendIdx = 0;
+  46   1          GizwitsSendBuffer[GizwitsSendIdx++] = Cmd;
+  47   1          GizwitsSendBuffer[GizwitsSendIdx++] = GizwitsReceiveSn;
+  48   1          switch (Cmd)
+  49   1          {
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 2   
+
+  50   2          case 0x02: //WiFiƒ£◊È«Î«Û…Ë±∏–≈œ¢
+  51   2          {
+  52   3              pdata ushort i;
+  53   3              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+  54   3              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+  55   3              for (i = 0; i != 8; ++i)
+  56   3                  GizwitsSendBuffer[GizwitsSendIdx++] = SerialProtocolVer[i];
+  57   3              for (i = 0; i != 8; ++i)
+  58   3                  GizwitsSendBuffer[GizwitsSendIdx++] = BusinessProtocolVer[i];
+  59   3              for (i = 0; i != 8; ++i)
+  60   3                  GizwitsSendBuffer[GizwitsSendIdx++] = HardwareVer[i];
+  61   3              for (i = 0; i != 8; ++i)
+  62   3                  GizwitsSendBuffer[GizwitsSendIdx++] = SoftwareVer[i];
+  63   3              for (i = 0; i != 32; ++i)
+  64   3                  GizwitsSendBuffer[GizwitsSendIdx++] = ProductKey[i];
+  65   3              GizwitsSendBuffer[GizwitsSendIdx++] = (BindingStateSec >> 8) & 0xFF;
+  66   3              GizwitsSendBuffer[GizwitsSendIdx++] = (BindingStateSec)&0xFF;
+  67   3              for (i = 0; i != 8; ++i)
+  68   3                  GizwitsSendBuffer[GizwitsSendIdx++] = DeviceProperties[i];
+  69   3              for (i = 0; i != 32; ++i)
+  70   3                  GizwitsSendBuffer[GizwitsSendIdx++] = ProductSecret[i];
+  71   3              GizwitsSendBuffer[GizwitsSendIdx++] = (DataLen >> 8) & 0xFF;
+  72   3              GizwitsSendBuffer[GizwitsSendIdx++] = (DataLen)&0xFF;
+  73   3              for (i = 0; i != DataLen; ++i)
+  74   3                  GizwitsSendBuffer[GizwitsSendIdx++] = Data[i];
+  75   3                      GizwitsST.WiFiConect=true;//∑¢ÀÕAns=0x02ÕÍ±œ,ø…“‘ø™ ºAsk
+  76   3          }
+  77   2          break;
+  78   2          case 0x04:                                      //WiFiƒ£◊Èøÿ÷∆…Ë±∏&∂¡»°…Ë±∏µƒµ±«∞◊¥Ã¨
+  79   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+  80   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+  81   2              {
+  82   3                  uchar Action = GizwitsReceiveBuffer[0];
+  83   3                  if (Action == 0x01) //WiFiƒ£◊Èøÿ÷∆…Ë±∏
+  84   3                  {
+  85   4                      GizwitsSetFifiControl();     //¥”GizwitsReceiveBuffer÷–∂¡»°øÿ÷∆ ˝æ›,¡¢º¥÷¥––
+  86   4                      GizwitsST.NeedReport = true; //–Ë“™…œ±®…Ë±∏◊¥Ã¨
+  87   4                  }
+  88   3                  else //WiFiƒ£◊È∂¡»°…Ë±∏µƒµ±«∞◊¥Ã¨
+  89   3                  {
+  90   4                      GizwitsSendBuffer[GizwitsSendIdx++] = 0x03;
+  91   4                      GizwitsGetDevState();         //œÚGizwitsReceiveBuffer÷––¥»Î…Ë±∏◊¥Ã¨–≈œ¢
+  92   4                      GizwitsST.NeedReport = false; //œ‡µ±”⁄÷¥––¡À…œ±® ˝æ›
+  93   4                  }
+  94   3              }
+  95   2              break;
+  96   2          case 0x08:                                      //–ƒÃ¯
+  97   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+  98   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+  99   2              break;
+ 100   2          case 0x0E:                                      //WiFiÕ∆ÀÕƒ£◊Èπ§◊˜◊¥Ã¨
+ 101   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 102   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 103   2              GizwitsWiFiAsk0x0E(); //µ˜”√◊”≥Ã–Ú¥¶¿ÌWiFiƒ£◊Èπ§◊˜◊¥Ã¨–≈œ¢
+ 104   2              break;
+ 105   2          case 0x10:                                      //WiFiƒ£◊È«Î«Û÷ÿ∆ÙMCU
+ 106   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 107   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 108   2              GizwitsST.NeedRstMCU = true;
+ 109   2              break;
+ 110   2          case 0x12:                                      //”¶¥WiFiƒ£◊È ˝æ›∞¸∑«∑®
+ 111   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 3   
+
+ 112   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 113   2              GizwitsSendBuffer[GizwitsSendIdx++] = GizwitsST.GizwitsIllegalCode;
+ 114   2              break;
+ 115   2          default:
+ 116   2      #if LOGRANK_UART1 >= 1
+ 117   2              printf("ERR:GizwitsHandleWiFiAsk can't Ans this AnsCmd[%02bx]\r\n", Cmd);
+ 118   2      #endif
+ 119   2              GizwitsSendIdx = 0; //«Âø’∑¢ÀÕª∫≥Â«¯
+ 120   2              return;
+ 121   2          }
+ 122   1          GizwitsSend(1); //∑¢ÀÕ Ans  ˝æ›∞¸
+ 123   1      }
+ 124          void GizwitsHandleWiFiAns(uchar Cmd) //≤Œ ˝Cmd: MCU“—«Î«Û√¸¡Ó
+ 125          {
+ 126   1          if (Cmd != GizwitsSendOldBuffer[GizwitsSendOldQSize][0] || GizwitsReceiveSn != GizwitsSendOldBuffer[Gi
+             -zwitsSendOldQSize][1])
+ 127   1          { //∑¢œ÷Œ¥÷™µƒ¥ÌŒÛ,µ±«∞Ans”ÎMCUµ»¥˝”¶¥µƒAsk,SnªÚCmd≤ª∑˚
+ 128   2      #if LOGRANK_UART1 >= 1
+ 129   2              printf("ERR:GizwitsHandleWiFiAns found AskCmd[%02bx|%02bx]or Sn[%02bx|%02bx]illegal,Ans->0x12_0x02
+             -\r\n",
+ 130   2                     Cmd, GizwitsSendOldBuffer[GizwitsSendOldQSize][0], GizwitsReceiveSn, GizwitsSendOldBuffer[G
+             -izwitsSendOldQSize][1]);
+ 131   2      #endif
+ 132   2              GizwitsST.GizwitsIllegalCode = 0x02;
+ 133   2              GizwitsHandleWiFiAsk(0x12); //◊™Œ™GizwitsHandleWiFiAsk”¶¥ ˝æ›∞¸∑«∑®
+ 134   2              return;
+ 135   2          }
+ 136   1      #if LOGRANK_UART1 >= 2
+ 137   1          printf("LOG#:Handle WiFi Ans[%02bx]\r\n", Cmd); //»’÷æº«¬ºMCU¥¶¿ÌWiFi Ans,CmdŒ™MCU“—∑¢ÀÕAsk
+ 138   1      #endif
+ 139   1          GizwitsST.NeedAns = false; //»°œ˚µ»¥˝WiFi”¶¥±Í÷æ,≥…π¶÷¥––∂‘”¶AskCmd
+ 140   1          switch (Cmd)               //¥¶¿ÌWiFi Ans–≈œ¢
+ 141   1          {
+ 142   2          case 0x05: //MCUœÚWiFiƒ£◊È÷˜∂Ø…œ±®µ±«∞◊¥Ã¨
+ 143   2          case 0x09: //MCUÕ®÷™WiFiƒ£◊ÈΩ¯»Î≈‰÷√ƒ£ Ω
+ 144   2          case 0x0B: //÷ÿ÷√WiFiƒ£◊È
+ 145   2          case 0x15: //Õ®÷™WiFiƒ£◊ÈΩ¯»Îø…∞Û∂®ƒ£ Ω
+ 146   2          case 0x29: //MCU÷ÿ∆ÙÕ®—∂ƒ£◊È
+ 147   2          case 0x13: //MCU«Î«ÛWiFiƒ£◊ÈΩ¯»Î≤˙≤‚ƒ£ Ω
+ 148   2              break; //√ª”––≈œ¢–Ë“™¥¶¿Ì
+ 149   2          case 0x17: //ªÒ»°Õ¯¬Á ±º‰
+ 150   2      #ifdef GizwitsUseWiFiRealTime
+ 151   2              GizwitsWiFiAns0x17();
+ 152   2      #else
+              #if LOGRANK_UART1 >= 1
+                      printf("ERR:Unable GizwitsUseWiFiRealTime Def,ignore Ans datas\r\n");
+              #endif
+              #endif
+ 157   2              break;
+ 158   2          case 0x21: //ªÒ»°Õ®—∂ƒ£◊Èµƒ–≈œ¢
+ 159   2      #ifdef GizwitsUseWiFiProperty
+ 160   2              GizwitsWiFiAns0x21();
+ 161   2      #else
+              #if LOGRANK_UART1 >= 1
+                      printf("ERR:Unable GizwitsUseWiFiProperty Def,ignore Ans datas\r\n");
+              #endif
+              #endif
+ 166   2              break;
+ 167   2          default: //Œ¥÷™√¸¡Ó,—œ÷ÿ¥ÌŒÛ,ø…ƒ‹∑¢…˙¡À“‚Õ‚µƒSendBuffer+ReceiveBuffer¥ÌŒÛ
+ 168   2      #if LOGRANK_UART1 >= 1
+ 169   2              printf("ERR:MCU AskCmd for WiFi Ans is unknown,serious ERR!\r\n");
+ 170   2      #endif
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 4   
+
+ 171   2                      break;
+ 172   2          }
+ 173   1      }
+ 174          uchar GizwitsHandleMCUAsk(uchar Cmd) //MCU∑¢ÀÕCmd√¸¡ÓAsk ˝æ›∞¸
+ 175          {
+ 176   1          static pdata uchar AskSn = 0; //±æµÿSn
+ 177   1          if (GizwitsST.NeedAns == 1||GizwitsST.WiFiConect==false)   //…œ¥Œ∑¢ÀÕµƒAskªπŒ¥”¶¥ªÚªπŒ¥”ÎWiFi»∑»œ,»°œ
+             -˚∑¢ÀÕ
+ 178   1              return 1;
+ 179   1      #if LOGRANK_UART1 >= 2
+ 180   1          printf("LOG#:Handle MCU Ask[%02bx]\r\n", Cmd); //»’÷æº«¬ºMCU¥¶¿Ì¥˝∑¢ÀÕAsk Cmd
+ 181   1      #endif
+ 182   1          GizwitsSendIdx = 0;                          //≥ı ºªØSendBufferœ¬±Í,◊º±∏…˙≥…Ask
+ 183   1          GizwitsSendBuffer[GizwitsSendIdx++] = Cmd;   //–¥»ÎCmd
+ 184   1          GizwitsSendBuffer[GizwitsSendIdx++] = AskSn; //–¥»ÎSn
+ 185   1          switch (Cmd)
+ 186   1          {
+ 187   2          case 0x05:                                      //MCUœÚWiFiƒ£◊È÷˜∂Ø…œ±®µ±«∞◊¥Ã¨
+ 188   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 189   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 190   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x04; //action
+ 191   2              GizwitsGetDevState();
+ 192   2              break;
+ 193   2          case 0x09:                                      //MCUÕ®÷™WiFiƒ£◊ÈΩ¯»Î≈‰÷√ƒ£ Ω
+ 194   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 195   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 196   2              GizwitsSendBuffer[GizwitsSendIdx++] = GizwitsST.GizwitsConfigMode;
+ 197   2              if (GizwitsST.GizwitsConfigMode == 0x04) //MCU÷±Ω”–¥»Î≈‰÷√–≈œ¢ƒ£ Ω
+ 198   2                  GizwitsMCUAsk0x09();                 //÷¥––◊”∫Ø ˝–¥»Î±æµÿWiFi≈‰÷√–≈œ¢
+ 199   2              break;
+ 200   2          case 0x0B:                                      //÷ÿ÷√WiFiƒ£◊È
+ 201   2          case 0x15:                                      //Õ®÷™WiFiƒ£◊ÈΩ¯»Îø…∞Û∂®ƒ£ Ω
+ 202   2          case 0x29:                                      //MCU÷ÿ∆ÙÕ®—∂ƒ£◊È
+ 203   2          case 0x13:                                      //MCU«Î«ÛWiFiƒ£◊ÈΩ¯»Î≤˙≤‚ƒ£ Ω
+ 204   2          case 0x17:                                      //ªÒ»°Õ¯¬Á ±º‰
+ 205   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 206   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 207   2              break;
+ 208   2          case 0x21:                                      //ªÒ»°Õ®—∂ƒ£◊Èµƒ–≈œ¢
+ 209   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //Flags
+ 210   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00;
+ 211   2              GizwitsSendBuffer[GizwitsSendIdx++] = 0x00; //type,πÃ∂®Œ™0x00,∑µªÿª˘±æ–≈œ¢
+ 212   2              break;
+ 213   2          default: //Œ¥÷™√¸¡Ó,Œﬁ∑®÷¥––!
+ 214   2      #if LOGRANK_UART1 >= 1
+ 215   2              printf("ERR:The AskCmd is unknown\r\n");
+ 216   2      #endif
+ 217   2              GizwitsSendIdx = 0; //÷ÿ÷√SendBuffer
+ 218   2              return 2;
+ 219   2          }
+ 220   1          GizwitsSend(2);
+ 221   1          GizwitsST.NeedAns = true;                      //Ω¯»Îµ»¥˝Ans◊¥Ã¨
+ 222   1          GizwitsST.NeedAns_RstCount = 0;                //≥ı ºªØµ»¥˝Ans,“—÷ÿ∑¢Ask¥Œ ˝
+ 223   1          GizwitsST.NeedAns_Ms = GizwitsST.GizwitsSysMs; //≥ı ºªØµ»¥˝
+ 224   1          ++AskSn;                                       //∏¸–¬AskSn÷µ
+ 225   1          return 0;
+ 226   1      }
+ 227          //≤Œ ˝: ˝æ›∞¸Cmd∫ÕFlags÷µ
+ 228          //1.»ÙCmd «WiFi->MCU(«Î«Û)
+ 229          //ºÏ≤ÈFlags «∑Ò∑˚∫œ“™«Û,’˝≥£∑µªÿ0x00|ReCmd;
+ 230          //2.»ÙCmd «WiFi->MCU(”¶¥)
+ 231          //ºÏ≤ÈFlags «∑Ò∑˚∫œ“™«Û,’˝≥£∑µªÿ0xFF|ReCmd;
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 5   
+
+ 232          //3.»ÙCmd «MCU->WiFi(«Î«Û|”¶¥)
+ 233          //ºÏ≤ÈFlags «∑Ò∑˚∫œ“™«Û,’˝≥£∑µªÿ0x0100;
+ 234          //*.FlagsºÏ≤È“Ï≥£,Re = 0xF000
+ 235          //*.CmdŒﬁ∑® ∂±,Re = 0xF100
+ 236          ushort GizwitsAnalyseCmd(uchar Cmd, ushort Flags)
+ 237          {
+ 238   1          pdata ushort Re = 0;
+ 239   1          switch (Cmd)
+ 240   1          {
+ 241   2          //ª˘¥°Õ®—∂–≠“È
+ 242   2          case 0x01:               //Ask: WiFiƒ£◊È«Î«Û…Ë±∏–≈œ¢°™°™WiFi->MCU
+ 243   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 244   2                  Re = ReCmd_FlagsERR;
+ 245   2              else
+ 246   2                  Re = 0x0002; //MCU->WiFi Ans Cmd
+ 247   2              break;
+ 248   2          case 0x02:               //Ans: WiFiƒ£◊È«Î«Û…Ë±∏–≈œ¢°™°™MCU->WiFi
+ 249   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 250   2                  Re = ReCmd_FlagsERR;
+ 251   2              else
+ 252   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 253   2              break;
+ 254   2      
+ 255   2          case 0x03:               //Ask: WiFiƒ£◊Èøÿ÷∆…Ë±∏&∂¡»°…Ë±∏µƒµ±«∞◊¥Ã¨°™°™WiFi->MCU
+ 256   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 257   2                  Re = ReCmd_FlagsERR;
+ 258   2              else
+ 259   2                  Re = 0x0004; //MCU->WiFi Ans Cmd
+ 260   2              break;
+ 261   2          case 0x04:               //Ans: WiFiƒ£◊Èøÿ÷∆…Ë±∏&∂¡»°…Ë±∏µƒµ±«∞◊¥Ã¨°™°™MCU->WiFi
+ 262   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 263   2                  Re = ReCmd_FlagsERR;
+ 264   2              else
+ 265   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 266   2              break;
+ 267   2      
+ 268   2          case 0x05:               //Ask: MCUœÚWiFiƒ£◊È÷˜∂Ø…œ±®µ±«∞◊¥Ã¨°™°™MCU->WiFi
+ 269   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 270   2                  Re = ReCmd_FlagsERR;
+ 271   2              else
+ 272   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 273   2              break;
+ 274   2          case 0x06:               //Ans: MCUœÚWiFiƒ£◊È÷˜∂Ø…œ±®µ±«∞◊¥Ã¨°™°™WiFi->MCU
+ 275   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 276   2                  Re = ReCmd_FlagsERR;
+ 277   2              else
+ 278   2                  Re = 0xFF05; //MCU->WiFi Ask Cmd
+ 279   2              break;
+ 280   2      
+ 281   2          case 0x07:               //Ask: –ƒÃ¯°™°™WiFi->MCU
+ 282   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 283   2                  Re = ReCmd_FlagsERR;
+ 284   2              else
+ 285   2                  Re = 0x0008; //MCU->WiFi Ans Cmd
+ 286   2              break;
+ 287   2          case 0x08:               //Ans: –ƒÃ¯°™°™MCU->WiFi
+ 288   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 289   2                  Re = ReCmd_FlagsERR;
+ 290   2              else
+ 291   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 292   2              break;
+ 293   2      
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 6   
+
+ 294   2          case 0x09:               //Ask: MCUÕ®÷™WiFiƒ£◊ÈΩ¯»Î≈‰÷√ƒ£ Ω°™°™MCU->WiFi
+ 295   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 296   2                  Re = ReCmd_FlagsERR;
+ 297   2              else
+ 298   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 299   2              break;
+ 300   2          case 0x0A:               //Ans: MCUÕ®÷™WiFiƒ£◊ÈΩ¯»Î≈‰÷√ƒ£ Ω°™°™WiFi->MCU
+ 301   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 302   2                  Re = ReCmd_FlagsERR;
+ 303   2              else
+ 304   2                  Re = 0xFF09; //MCU->WiFi Ask Cmd
+ 305   2              break;
+ 306   2      
+ 307   2          case 0x0B:               //Ask: ÷ÿ÷√WiFiƒ£◊È°™°™MCU->WiFi
+ 308   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 309   2                  Re = ReCmd_FlagsERR;
+ 310   2              else
+ 311   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 312   2              break;
+ 313   2          case 0x0C:               //Ans: ÷ÿ÷√WiFiƒ£◊È°™°™WiFi->MCU
+ 314   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 315   2                  Re = ReCmd_FlagsERR;
+ 316   2              else
+ 317   2                  Re = 0xFF0B; //MCU->WiFi Ask Cmd
+ 318   2              break;
+ 319   2      
+ 320   2          case 0x0D:               //Ask: WiFiÕ∆ÀÕƒ£◊Èπ§◊˜◊¥Ã¨°™°™WiFi->MCU
+ 321   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 322   2                  Re = ReCmd_FlagsERR;
+ 323   2              else
+ 324   2                  Re = 0x000E; //MCU->WiFi Ans Cmd
+ 325   2              break;
+ 326   2          case 0x0E:               //Ans: WiFiÕ∆ÀÕƒ£◊Èπ§◊˜◊¥Ã¨°™°™MCU->WiFi
+ 327   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 328   2                  Re = ReCmd_FlagsERR;
+ 329   2              else
+ 330   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 331   2              break;
+ 332   2      
+ 333   2          case 0x11:               //ERR: ∑«∑® ˝æ›∞¸Õ®÷™°™°™WiFi->MCU
+ 334   2          case 0x12:               //ERR: ∑«∑® ˝æ›∞¸Õ®÷™°™°™MCU->WiFi
+ 335   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 336   2                  Re = ReCmd_FlagsERR;
+ 337   2              else
+ 338   2                  Re = ReCmd_MSGERR; //MCU->WiFi Ans Cmd
+ 339   2              break;
+ 340   2      
+ 341   2          case 0x15:               //Ask: Õ®÷™WiFiƒ£◊ÈΩ¯»Îø…∞Û∂®ƒ£ Ω°™°™MCU->WiFi
+ 342   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 343   2                  Re = ReCmd_FlagsERR;
+ 344   2              else
+ 345   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 346   2              break;
+ 347   2          case 0x16:               //Ans: Õ®÷™WiFiƒ£◊ÈΩ¯»Îø…∞Û∂®ƒ£ Ω°™°™WiFi->MCU
+ 348   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 349   2                  Re = ReCmd_FlagsERR;
+ 350   2              else
+ 351   2                  Re = 0xFF15; //MCU->WiFi Ask Cmd
+ 352   2              break;
+ 353   2      
+ 354   2          case 0x29:               //Ask: MCU÷ÿ∆ÙÕ®—∂ƒ£◊È°™°™MCU->WiFi
+ 355   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 7   
+
+ 356   2                  Re = ReCmd_FlagsERR;
+ 357   2              else
+ 358   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 359   2              break;
+ 360   2          case 0x2A:               //Ans: MCU÷ÿ∆ÙÕ®—∂ƒ£◊È°™°™WiFi->MCU
+ 361   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 362   2                  Re = ReCmd_FlagsERR;
+ 363   2              else
+ 364   2                  Re = 0xFF29; //MCU->WiFi Ask Cmd
+ 365   2              break;
+ 366   2      
+ 367   2          //ø…—°Õ®—∂–≠“È
+ 368   2          case 0x0F:               //Ask: WiFiƒ£◊È«Î«Û÷ÿ∆ÙMCU°™°™WiFi->MCU
+ 369   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 370   2                  Re = ReCmd_FlagsERR;
+ 371   2              else
+ 372   2                  Re = 0x0010; //MCU->WiFi Ans Cmd
+ 373   2              break;
+ 374   2          case 0x10:               //Ans: WiFiƒ£◊È«Î«Û÷ÿ∆ÙMCU°™°™MCU->WiFi
+ 375   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 376   2                  Re = ReCmd_FlagsERR;
+ 377   2              else
+ 378   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 379   2              break;
+ 380   2      
+ 381   2          case 0x13:               //Ask: MCU«Î«ÛWiFiƒ£◊ÈΩ¯»Î≤˙≤‚ƒ£ Ω°™°™MCU->WiFi
+ 382   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 383   2                  Re = ReCmd_FlagsERR;
+ 384   2              else
+ 385   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 386   2              break;
+ 387   2          case 0x14:               //Ans: MCU«Î«ÛWiFiƒ£◊ÈΩ¯»Î≤˙≤‚ƒ£ Ω°™°™WiFi->MCU
+ 388   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 389   2                  Re = ReCmd_FlagsERR;
+ 390   2              else
+ 391   2                  Re = 0xFF13; //MCU->WiFi Ask Cmd
+ 392   2              break;
+ 393   2      
+ 394   2          case 0x17:               //Ask: ªÒ»°Õ¯¬Á ±º‰°™°™MCU->WiFi
+ 395   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 396   2                  Re = ReCmd_FlagsERR;
+ 397   2              else
+ 398   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 399   2              break;
+ 400   2          case 0x18:               //Ans: ªÒ»°Õ¯¬Á ±º‰°™°™WiFi->MCU
+ 401   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 402   2                  Re = ReCmd_FlagsERR;
+ 403   2              else
+ 404   2                  Re = 0xFF17; //MCU->WiFi Ask Cmd
+ 405   2              break;
+ 406   2      
+ 407   2          case 0x21:               //Ask: ªÒ»°Õ®—∂ƒ£◊Èµƒ–≈œ¢°™°™MCU->WiFi
+ 408   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 409   2                  Re = ReCmd_FlagsERR;
+ 410   2              else
+ 411   2                  Re = ReCmd_MCU2WiFi; //FlagsºÏ≤È’˝≥£
+ 412   2              break;
+ 413   2          case 0x22:               //Ans: ªÒ»°Õ®—∂ƒ£◊Èµƒ–≈œ¢°™°™WiFi->MCU
+ 414   2              if (Flags != 0x0000) //∏√√¸¡ÓFlags“Ï≥£
+ 415   2                  Re = ReCmd_FlagsERR;
+ 416   2              else
+ 417   2                  Re = 0xFF21; //MCU->WiFi Ask Cmd
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 8   
+
+ 418   2              break;
+ 419   2              //¥Û ˝æ›œ‡πÿ÷∏¡Ó¬‘
+ 420   2      
+ 421   2          default: //CmdŒ¥µ«º«,Cmd“Ï≥£
+ 422   2              Re = ReCmd_CmdERR;
+ 423   2          }
+ 424   1          return Re;
+ 425   1      }
+ 426          static void GizwitsSetFifiControl(void) //¥”GizwitsReceiveBuffer÷–∂¡»°øÿ÷∆ ˝æ›,¡¢º¥÷¥––
+ 427          {
+ 428   1          pdata uchar MSGMask = GizwitsReceiveBuffer[1];
+ 429   1          pdata uchar MSGControl = GizwitsReceiveBuffer[2];
+ 430   1          if ((MSGMask & 0x01) != 0)
+ 431   1          {
+ 432   2              if ((MSGControl & 0x01) != 0)
+ 433   2                  LED_RED = 0;
+ 434   2              else
+ 435   2                  LED_RED = 1;
+ 436   2          }
+ 437   1          if ((MSGMask & 0x02) != 0)
+ 438   1          {
+ 439   2              if ((MSGControl & 0x02) != 0)
+ 440   2                  LED_BLUE = 0;
+ 441   2              else
+ 442   2                  LED_BLUE = 1;
+ 443   2          }
+ 444   1      #if LOGRANK_UART1 >= 2
+ 445   1          printf("LOG#:WiFi Control ok[%02bx,%02bx]\r\n", MSGMask, MSGControl);
+ 446   1      #endif
+ 447   1      }
+ 448          static void GizwitsGetDevState(void) //œÚGizwitsReceiveBuffer÷––¥»Î…Ë±∏◊¥Ã¨–≈œ¢
+ 449          {
+ 450   1          pdata uchar MSGSTATE = 0;
+ 451   1          if (LED_RED == 0)
+ 452   1              MSGSTATE |= 0x01;
+ 453   1          if (LED_BLUE == 0)
+ 454   1              MSGSTATE |= 0x02;
+ 455   1          GizwitsSendBuffer[GizwitsSendIdx++] = MSGSTATE;
+ 456   1      #if LOGRANK_UART1 >= 3
+ 457   1          printf("LOG:Get DevState[%02bx,%u,", MSGSTATE, DS18B20ST.TemperatureData);
+ 458   1      #endif
+ 459   1          GizwitsSendBuffer[GizwitsSendIdx++] = (DS18B20ST.TemperatureData) >> 8; //–¥»Îª∫¥ÊµƒŒ¬∂»÷µ
+ 460   1          GizwitsSendBuffer[GizwitsSendIdx++] = (DS18B20ST.TemperatureData) & 0xFF;
+ 461   1          MSGSTATE = DS18B20ST.TemperatureLow, MSGSTATE <<= 1, MSGSTATE |= DS18B20ST.TemperatureHigh;
+ 462   1          GizwitsSendBuffer[GizwitsSendIdx++] = MSGSTATE;
+ 463   1      #if LOGRANK_UART1 >= 3
+ 464   1          printf("%02bx]\r\n", MSGSTATE);
+ 465   1      #endif
+ 466   1      }
+ 467          // Ù”⁄GizwitsHandleWiFiAskµƒ◊”∫Ø ˝,Cmd=0x0E,”√”⁄∂¡»°WiFiƒ£◊Èπ§◊˜◊¥Ã¨
+ 468          static void GizwitsWiFiAsk0x0E(void)
+ 469          {
+ 470   1          if (GizwitsST.OpenSoftAP ^ (GizwitsReceiveBuffer[1] & 0x01)) //SoftAPƒ£ Ω∑¢…˙±‰ªØ
+ 471   1          {
+ 472   2              GizwitsST.OpenSoftAP = ~(GizwitsST.OpenSoftAP);
+ 473   2      #if LOGRANK_UART1 >= 3
+ 474   2              printf("LOG:%s SoftAP Mode\r\n", GizwitsST.OpenSoftAP == true ? "Enter" : "Exit");
+ 475   2      #endif
+ 476   2          }
+ 477   1          GizwitsReceiveBuffer[1] >>= 1;
+ 478   1          if (GizwitsST.OpenStation ^ (GizwitsReceiveBuffer[1] & 0x01)) //Stationƒ£ Ω∑¢…˙±‰ªØ
+ 479   1          {
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 9   
+
+ 480   2              GizwitsST.OpenStation = ~(GizwitsST.OpenStation);
+ 481   2      #if LOGRANK_UART1 >= 3
+ 482   2              printf("LOG:%s Station Mode\r\n", GizwitsST.OpenStation == true ? "Enter" : "Exit");
+ 483   2      #endif
+ 484   2          }
+ 485   1          GizwitsReceiveBuffer[1] >>= 1;
+ 486   1          if (GizwitsST.OpenOnBoarding ^ (GizwitsReceiveBuffer[1] & 0x01)) //≈‰÷√(OnBoarding)ƒ£ Ω∑¢…˙±‰ªØ
+ 487   1          {
+ 488   2              GizwitsST.OpenOnBoarding = ~(GizwitsST.OpenOnBoarding);
+ 489   2      #if LOGRANK_UART1 >= 3
+ 490   2              printf("LOG:%s OnBoarding Mode\r\n", GizwitsST.OpenOnBoarding ? "Enter" : "Exit");
+ 491   2              if (GizwitsST.OpenOnBoarding)
+ 492   2                  printf("    %s Mode\r\n", GizwitsST.OpenSoftAP == true ? "SoftAP" : "AirLink");
+ 493   2      #endif
+ 494   2          }
+ 495   1          GizwitsReceiveBuffer[1] >>= 1;
+ 496   1          if (GizwitsST.OpenBindMode ^ (GizwitsReceiveBuffer[1] & 0x01)) //∞Û∂®ƒ£ Ω∑¢…˙±‰ªØ
+ 497   1          {
+ 498   2              GizwitsST.OpenBindMode = ~(GizwitsST.OpenBindMode);
+ 499   2      #if LOGRANK_UART1 >= 3
+ 500   2              printf("LOG:%s BindMode\r\n", GizwitsST.OpenBindMode == true ? "Enter" : "Exit");
+ 501   2      #endif
+ 502   2          }
+ 503   1          GizwitsReceiveBuffer[1] >>= 1;
+ 504   1          if (GizwitsST.ConnectRoute ^ (GizwitsReceiveBuffer[1] & 0x01)) //”ÎŒﬁœﬂ¬∑”…∆˜¡¨Ω”∑¢…˙±‰ªØ
+ 505   1          {
+ 506   2              GizwitsST.ConnectRoute = ~(GizwitsST.ConnectRoute);
+ 507   2      #if LOGRANK_UART1 >= 3
+ 508   2              printf("LOG:WireLess Route %s\r\n", GizwitsST.ConnectRoute == true ? "Connect" : "Disconnect");
+ 509   2      #endif
+ 510   2          }
+ 511   1          GizwitsReceiveBuffer[1] >>= 1;
+ 512   1          if (GizwitsST.ConnectM2M ^ (GizwitsReceiveBuffer[1] & 0x01)) //”ÎM2M∑˛ŒÒ∆˜¡¨Ω”∑¢…˙±‰ªØ
+ 513   1          {
+ 514   2              GizwitsST.ConnectM2M = ~(GizwitsST.ConnectM2M);
+ 515   2      #if LOGRANK_UART1 >= 3
+ 516   2              printf("LOG:M2M server %s\r\n", GizwitsST.ConnectM2M == true ? "Connect" : "Disconnect");
+ 517   2      #endif
+ 518   2          }
+ 519   1          GizwitsST.RouteRSSI = GizwitsReceiveBuffer[0] & 0x07; //∏¸–¬Œﬁœﬂ¬∑”…∆˜–≈∫≈«ø∂»
+ 520   1      #if LOGRANK_UART1 >= 3
+ 521   1          if (GizwitsST.ConnectRoute)
+ 522   1              printf("LOG:Route RSSI-%bu\r\n", GizwitsST.RouteRSSI);
+ 523   1      #endif
+ 524   1          if (GizwitsST.AppOnline ^ (GizwitsReceiveBuffer[0] & 0x08) >> 3) //App‘⁄œﬂ◊¥Ã¨∑¢…˙±‰ªØ
+ 525   1          {
+ 526   2              GizwitsST.AppOnline = ~(GizwitsST.AppOnline);
+ 527   2      #if LOGRANK_UART1 >= 3
+ 528   2              printf("LOG:%s app online now\r\n", GizwitsST.AppOnline == true ? "Have" : "None");
+ 529   2      #endif
+ 530   2          }
+ 531   1          if (GizwitsST.ProductTestMode ^ (GizwitsReceiveBuffer[0] & 0x10) >> 4) //≤˙∆∑≤‚ ‘ƒ£ Ω∑¢…˙±‰ªØ
+ 532   1          {
+ 533   2              GizwitsST.ProductTestMode = ~(GizwitsST.ProductTestMode);
+ 534   2      #if LOGRANK_UART1 >= 3
+ 535   2              printf("LOG:%s product test\r\n", GizwitsST.ProductTestMode == true ? "Enter" : "Exit");
+ 536   2      #endif
+ 537   2          }
+ 538   1      }
+ 539          // Ù”⁄GizwitsHandleWiFiAnsµƒ◊”∫Ø ˝,Cmd=0x17«“ π”√WiFiµƒRealTime–≈œ¢ ±Ã·»° ˝æ›
+ 540          static void GizwitsWiFiAns0x17(void)
+ 541          {
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 10  
+
+ 542   1          GizwitsRealTime.Year = GizwitsReceiveBuffer[0];
+ 543   1          GizwitsRealTime.Year <<= 8;
+ 544   1          GizwitsRealTime.Year |= GizwitsReceiveBuffer[1];
+ 545   1          GizwitsRealTime.Month = GizwitsReceiveBuffer[2];
+ 546   1          GizwitsRealTime.Day = GizwitsReceiveBuffer[3];
+ 547   1          GizwitsRealTime.Hour = GizwitsReceiveBuffer[4];
+ 548   1          GizwitsRealTime.Minute = GizwitsReceiveBuffer[5];
+ 549   1          GizwitsRealTime.Second = GizwitsReceiveBuffer[6];
+ 550   1          GizwitsRealTime.NTP = GizwitsReceiveBuffer[7];
+ 551   1          GizwitsRealTime.NTP <<= 8;
+ 552   1          GizwitsRealTime.NTP |= GizwitsReceiveBuffer[8];
+ 553   1          GizwitsRealTime.NTP <<= 8;
+ 554   1          GizwitsRealTime.NTP |= GizwitsReceiveBuffer[9];
+ 555   1          GizwitsRealTime.NTP <<= 8;
+ 556   1          GizwitsRealTime.NTP |= GizwitsReceiveBuffer[10];
+ 557   1      #if LOGRANK_UART1 >= 3
+ 558   1          printf("LOG:Get Real Time,%04u.%02bu.%02bu,%02bu:%02bu:%02bu,NTP:%lu\r\n",
+ 559   1                 GizwitsRealTime.Year, GizwitsRealTime.Month, GizwitsRealTime.Day,
+ 560   1                 GizwitsRealTime.Hour, GizwitsRealTime.Minute, GizwitsRealTime.Second, GizwitsRealTime.NTP);
+ 561   1      #endif
+ 562   1      }
+ 563          // Ù”⁄GizwitsHandleWiFiAnsµƒ◊”∫Ø ˝,Cmd=0x21«“ π”√WiFiµƒ…Ë±∏–≈œ¢ ±Ã·»° ˝æ›
+ 564          static void GizwitsWiFiAns0x21(void)
+ 565          {
+ 566   1          pdata uchar i, j = 0;
+ 567   1          GizwitsWiFiProperty.ModuleType = GizwitsReceiveBuffer[j++];
+ 568   1          for (i = 0; i != 8; ++i)
+ 569   1              GizwitsWiFiProperty.SerialProtocolVer[i] = GizwitsReceiveBuffer[j++];
+ 570   1          for (i = 0; i != 8; ++i)
+ 571   1              GizwitsWiFiProperty.HardwareVer[i] = GizwitsReceiveBuffer[j++];
+ 572   1          for (i = 0; i != 8; ++i)
+ 573   1              GizwitsWiFiProperty.SoftwareVer[i] = GizwitsReceiveBuffer[j++];
+ 574   1          for (i = 0; i == 0 || GizwitsReceiveBuffer[i - 1] != '\0'; ++i)
+ 575   1              GizwitsWiFiProperty.Mac[i] = GizwitsReceiveBuffer[j++];
+ 576   1          for (i = 0; i == 0 || GizwitsReceiveBuffer[i - 1] != '\0'; ++i)
+ 577   1              GizwitsWiFiProperty.Ip[i] = GizwitsReceiveBuffer[j++];
+ 578   1          for (i = 0; i != 8; ++i)
+ 579   1              GizwitsWiFiProperty.Property[i] = GizwitsReceiveBuffer[j++];
+ 580   1      #if LOGRANK_UART1 >= 3
+ 581   1          printf("LOG:Get WiFi Property@\r\nModuleType:%02bu\r\n", GizwitsWiFiProperty.ModuleType);
+ 582   1          printf("SerialProtocolVer:%.8s\r\n", GizwitsWiFiProperty.SerialProtocolVer);
+ 583   1          printf("HardwareVer:%.8s\r\n", GizwitsWiFiProperty.HardwareVer);
+ 584   1          printf("SoftwareVer:%.8s\r\n", GizwitsWiFiProperty.SoftwareVer);
+ 585   1          printf("Mac:%s\r\n", GizwitsWiFiProperty.Mac);
+ 586   1          printf("Ip:%s\r\n", GizwitsWiFiProperty.Ip);
+ 587   1          printf("Property:");
+ 588   1          for (i = 0; i != 8; ++i)
+ 589   1              printf("%02bx", GizwitsWiFiProperty.Property[i]);
+ 590   1          printf("\r\n");
+ 591   1      #endif
+ 592   1      }
+ 593          // Ù”⁄GizwitsHandleMCUAskµƒ◊”∫Ø ˝,Cmd=0x09«“GizwitsConfigMode=0x04 ±–¥»ÎSendBuffer÷–WiFi≈‰÷√–≈œ¢
+ 594          static void GizwitsMCUAsk0x09(void)
+ 595          {
+ 596   1          pdata uchar i8, j8;
+ 597   1          pdata ulong i32, j32;
+ 598   1          j8 = GizwitsSendBuffer[GizwitsSendIdx++] = strlen(ConfigMode4Ssid);
+ 599   1          for (i8 = 0; i8 != j8; ++i8)
+ 600   1              GizwitsSendBuffer[GizwitsSendIdx++] = ConfigMode4Ssid[i8];
+ 601   1          j8 = GizwitsSendBuffer[GizwitsSendIdx++] = strlen(ConfigMode4Password);
+ 602   1          for (i8 = 0; i8 != j8; ++i8)
+ 603   1              GizwitsSendBuffer[GizwitsSendIdx++] = ConfigMode4Password[i8];
+C51 COMPILER V9.59.0.0   GIZWITSMSG                                                        04/10/2020 16:40:32 PAGE 11  
+
+ 604   1          j8 = GizwitsSendBuffer[GizwitsSendIdx++] = strlen(ConfigMode4Bssid);
+ 605   1          for (i8 = 0; i8 != j8; ++i8)
+ 606   1              GizwitsSendBuffer[GizwitsSendIdx++] = ConfigMode4Bssid[i8];
+ 607   1          j32 = GizwitsSendBuffer[GizwitsSendIdx++] = strlen(ConfigMode4Tz);
+ 608   1          for (i32 = 0; i32 != j32; ++i32)
+ 609   1              GizwitsSendBuffer[GizwitsSendIdx++] = ConfigMode4Tz[i32];
+ 610   1          j8 = GizwitsSendBuffer[GizwitsSendIdx++] = strlen(ConfigMode4ServerName);
+ 611   1          for (i8 = 0; i8 != j8; ++i8)
+ 612   1              GizwitsSendBuffer[GizwitsSendIdx++] = ConfigMode4ServerName[i8];
+ 613   1      }
+ 614          //------------------------------------------------------------------------------------------------//
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   3398    ----
+   CONSTANT SIZE    =    863    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =      1      19
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

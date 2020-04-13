@@ -1,0 +1,13 @@
+".\Objects\main.obj",
+".\Objects\GizwitsHandle.obj",
+".\Objects\GizwitsMSG.obj",
+".\Objects\GizwitsConfig.obj",
+".\Objects\ISR.obj",
+".\Objects\uart.obj",
+".\Objects\Init.obj",
+".\Objects\delay.obj",
+".\Objects\DS18B20.obj",
+".\Objects\LCD1602.obj" 
+TO ".\Objects\STC8_Gizwits" 
+
+PRINT(".\Listings\STC8_Gizwits.map") REMOVEUNUSED 

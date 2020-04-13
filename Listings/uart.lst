@@ -1,0 +1,119 @@
+C51 COMPILER V9.59.0.0   UART                                                              04/10/2020 16:40:32 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN .\Objects\uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\Basic\uart\uart.c OMF2 OPTIMIZE(9,SPEED) BROWSE MODP2 INCDIR(.\Code
+                    -\Basic\def;.\Code\Basic\delay;.\Code\Basic\init;.\Code\Basic\uart;.\Code\Gizwits;.\Code\Sensor\DS18B20;.\Code\Sensor\LCD
+                    -1602) DEBUG PRINT(.\Listings\uart.lst) OBJECT(.\Objects\uart.obj)
+
+line level    source
+
+   1          #include "uart.h"
+   2          //------------------------------------------------------------------------------------------------//
+   3          xdata uchar uart4_buffer[uart4_buffer_size];
+   4          pdata ushort uart4_idx1, uart4_idx2;
+   5          
+   6          bit uart1_busy, uart4_busy;
+   7          //------------------------------------------------------------------------------------------------//
+   8          #if LOGRANK_UART1 >= 1
+   9          //-----------重写putchar函数-----------//
+  10          //----用于printf函数向串口1发送数据----//
+  11          char putchar(char ch)
+  12          {
+  13   1          uart1_send8(ch);
+  14   1          return 1;
+  15   1      }
+  16          void uart1_send8(uchar dat)
+  17          {
+  18   1          while (uart1_busy)
+  19   1              ;
+  20   1          uart1_busy = true;
+  21   1          SBUF = dat;
+  22   1          while (uart1_busy)
+  23   1              ;
+  24   1      }
+  25          #endif
+  26          //void uart1_sendstr8(uchar *p,uchar n)
+  27          //{
+  28          //      if(n)
+  29          //              while(n--)
+  30          //                      uart1_send8(*p++);
+  31          //      else
+  32          //              while(*p)
+  33          //                      uart1_send8(*p++);
+  34          //}
+  35          
+  36          //void uart2_send8(uchar dat)
+  37          //{
+  38          //    while (uart2_busy);
+  39          //      uart2_busy=true;
+  40          //    S2BUF = dat;
+  41          //    while (uart2_busy);
+  42          //}
+  43          //void uart2_sendstr8(uchar *p,uchar n)
+  44          //{
+  45          //      if(n)
+  46          //              while(n--)
+  47          //                      uart2_send8(*p++);
+  48          //      else
+  49          //              while(*p)
+  50          //                      uart2_send8(*p++);
+  51          //}
+  52          
+  53          //void uart3_send8(uchar dat)
+C51 COMPILER V9.59.0.0   UART                                                              04/10/2020 16:40:32 PAGE 2   
+
+  54          //{
+  55          //    while (uart3_busy);
+  56          //      uart3_busy=true;
+  57          //    S3BUF = dat;
+  58          //    while (uart1_busy);
+  59          //}
+  60          //void uart3_sendstr8(uchar *p,uchar n)
+  61          //{
+  62          //      if(n)
+  63          //              while(n--)
+  64          //                      uart3_send8(*p++);
+  65          //      else
+  66          //              while(*p)
+  67          //                      uart3_send8(*p++);
+  68          //}
+  69          
+  70          void uart4_send8(uchar dat)
+  71          {
+  72   1          while (uart4_busy)
+  73   1              ;
+  74   1          uart4_busy = true;
+  75   1          S4BUF = dat;
+  76   1          while (uart4_busy)
+  77   1              ;
+  78   1      }
+  79          //void uart4_sendstr8(uchar *p,uchar n)
+  80          //{
+  81          //      if(n)
+  82          //              while(n--)
+  83          //                      uart4_send8(*p++);
+  84          //      else
+  85          //              while(*p)
+  86          //                      uart4_send8(*p++);
+  87          //}
+  88          //------------------------------------------------------------------------------------------------//
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     28    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   1000    ----
+   PDATA SIZE       =      4    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
